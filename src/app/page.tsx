@@ -1,10 +1,50 @@
 "use client";
 
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { Heart, ArrowRight, Sparkles, Star, BookOpen, PawPrint, Sprout, Quote } from "lucide-react";
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import {
+  Heart,
+  ArrowRight,
+  Star,
+  BookOpen,
+  PawPrint,
+  Sprout,
+  Quote,
+  Package,
+  Home as HomeIcon,
+  GraduationCap,
+  Plus,
+  ShieldCheck,
+} from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { useLenis } from "lenis/react";
 import { LogoMark } from "@/components/Logo";
+import {
+  SproutSticker,
+  GiftSticker,
+  TagBlobSticker,
+  HeartBlobSticker,
+  StarBlobSticker,
+  CoinBlobSticker,
+} from "@/components/Stickers";
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const lenis = useLenis();
+
+  return (
+    <a
+      href={href}
+      onClick={(e) => {
+        if (!lenis) return;
+        e.preventDefault();
+        lenis.scrollTo(href, { offset: -90 });
+      }}
+      className="relative py-1 hover:text-brand-terracotta transition-colors after:absolute after:left-0 after:-bottom-1 after:h-[3px] after:w-0 after:bg-brand-terracotta after:transition-all after:duration-200 hover:after:w-full"
+    >
+      {children}
+    </a>
+  );
+}
 
 // Animation Variants
 const springIn: any = {
@@ -26,53 +66,6 @@ const staggerContainer: any = {
     },
   },
 };
-
-// Simple hand-authored sticker: 5-petal flower
-function FlowerSticker({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 60 60" fill="none" className={className} aria-hidden="true">
-      <g stroke="#12333A" strokeWidth="2.5" strokeLinejoin="round">
-        <ellipse cx="30" cy="14" rx="9" ry="12" fill="#F5D9DE" />
-        <ellipse cx="30" cy="46" rx="9" ry="12" fill="#F5D9DE" />
-        <ellipse cx="14" cy="30" rx="12" ry="9" fill="#F5D9DE" />
-        <ellipse cx="46" cy="30" rx="12" ry="9" fill="#F5D9DE" />
-        <circle cx="30" cy="30" r="8" fill="#D97757" />
-      </g>
-    </svg>
-  );
-}
-
-// Simple hand-authored sticker: price tag
-function TagSticker({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 60 60" fill="none" className={className} aria-hidden="true">
-      <path
-        d="M8 8h24l20 20-24 24-20-20V8z"
-        fill="#5C8A94"
-        stroke="#12333A"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      <circle cx="18" cy="18" r="4" fill="#F7F3EC" stroke="#12333A" strokeWidth="2" />
-      <text x="24" y="38" fontSize="14" fontWeight="700" fill="#12333A">
-        $
-      </text>
-    </svg>
-  );
-}
-
-// Simple hand-authored sticker: box
-function BoxSticker({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 60 60" fill="none" className={className} aria-hidden="true">
-      <g stroke="#12333A" strokeWidth="2.5" strokeLinejoin="round">
-        <path d="M8 20 30 10 52 20 30 30Z" fill="#D97757" />
-        <path d="M8 20v24l22 10V30Z" fill="#5C8A94" />
-        <path d="M52 20v24L30 54V30Z" fill="#6B96A0" />
-      </g>
-    </svg>
-  );
-}
 
 // Wavy SVG divider, used as a scene transition between color/photo sections
 function WaveDivider({ fill, flip = false }: { fill: string; flip?: boolean }) {
@@ -101,7 +94,7 @@ const causes = [
     icon: BookOpen,
     accent: "text-brand-terracotta",
     quote:
-      "The kids don't just borrow books here anymore — thanks to Clutter Sale sellers, we finally reopened on Saturdays.",
+      "The kids don't just borrow books here anymore. Thanks to Clutter Sale sellers, we finally reopened on Saturdays.",
     person: "Dana, Library Director",
   },
   {
@@ -123,7 +116,7 @@ const causes = [
     icon: Sprout,
     accent: "text-brand-navy",
     quote:
-      "We went from a scrappy lot to feeding forty families a week — funded by other people's closets.",
+      "We went from a scrappy lot to feeding forty families a week, funded by other people's closets.",
     person: "Renata, Garden Lead",
   },
 ];
@@ -147,7 +140,7 @@ const steps = [
     number: "03",
     title: "Safe Pickup",
     description:
-      "Meet up safely in your neighborhood or ship with secure escrow — payment is protected end to end.",
+      "Meet up safely in your neighborhood or ship with secure escrow. Payment is protected end to end.",
     rotate: "rotate-2",
   },
 ];
@@ -181,6 +174,21 @@ function WhyItMattersSection() {
             "radial-gradient(ellipse 60% 45% at 50% 42%, rgba(1,40,48,0.75), transparent 70%)",
         }}
       />
+
+      <motion.div
+        animate={{ rotate: [0, 10, 0], y: [0, -10, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-16 left-[8%] w-14 md:w-16 z-10 opacity-90 hidden md:block"
+      >
+        <StarBlobSticker className="w-full h-full" />
+      </motion.div>
+      <motion.div
+        animate={{ y: [0, 12, 0], rotate: [-6, 6, -6] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+        className="absolute bottom-24 right-[10%] w-14 md:w-16 z-10 opacity-90 hidden md:block"
+      >
+        <HeartBlobSticker className="w-full h-full" />
+      </motion.div>
 
       <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center">
         <motion.h2
@@ -236,7 +244,7 @@ function TheProblemSection() {
   const imageY = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? ["0%", "0%"] : ["-12%", "12%"]);
 
   return (
-    <section ref={ref} className="relative h-[80vh] min-h-[520px] overflow-hidden">
+    <section ref={ref} className="relative isolate h-[80vh] min-h-[520px] overflow-hidden">
       <motion.div className="absolute inset-0" style={{ y: imageY }}>
         <Image
           src="/images/community-giving.jpg"
@@ -250,14 +258,6 @@ function TheProblemSection() {
       <div className="absolute inset-0 bg-linear-to-b from-brand-navy/70 via-transparent to-brand-navy/80" />
 
       <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center max-w-3xl mx-auto">
-        <motion.span
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-brand-pink font-extrabold tracking-wider uppercase text-sm mb-4"
-        >
-          The Problem
-        </motion.span>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -265,7 +265,7 @@ function TheProblemSection() {
           transition={{ type: "spring", stiffness: 220, damping: 22, delay: 0.1 }}
           className="font-display text-brand-cream text-3xl md:text-5xl leading-tight text-balance"
         >
-          12 million tons of usable stuff gets thrown out every year — while
+          12 million tons of usable stuff gets thrown out every year, while
           shelters run out of blankets and food banks run out of food.
         </motion.p>
         <motion.p
@@ -275,9 +275,9 @@ function TheProblemSection() {
           transition={{ type: "spring", stiffness: 220, damping: 22, delay: 0.2 }}
           className="text-brand-cream/80 text-lg font-medium mt-6"
         >
-          It&apos;s not that people don&apos;t want to help. It&apos;s that
-          &quot;donate&quot; usually means a guilt trip to a drop box. We made
-          it something you actually want to do.
+          Most people want to help. What stops them is that donating usually
+          means sorting through boxes for a drop-off across town. Selling
+          takes the same effort and pays a nonprofit directly.
         </motion.p>
       </div>
     </section>
@@ -362,6 +362,279 @@ function CausesSection() {
   );
 }
 
+const stats = [
+  { value: "$2.4M+", label: "Raised for Local Causes" },
+  { value: "150k+", label: "Items Rehomed" },
+  { value: "500+", label: "Nonprofits Supported" },
+];
+
+function StatsSection() {
+  return (
+    <section className="relative bg-brand-navy py-16 md:py-20 px-6 overflow-hidden">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-brand-cream/15">
+        {stats.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, scale: 0.85 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ type: "spring", stiffness: 260, damping: 22, delay: i * 0.1 }}
+            className="pt-8 md:pt-0 first:pt-0"
+          >
+            <div className="font-display text-4xl md:text-6xl text-brand-pink mb-2 tabular-nums">
+              {stat.value}
+            </div>
+            <div className="text-brand-cream/80 font-bold">{stat.label}</div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+const useCases = [
+  {
+    icon: HomeIcon,
+    title: "Moving out",
+    description: "Don't haul it, sell it. Turn what you're leaving behind into a fresh start for someone else.",
+  },
+  {
+    icon: Sprout,
+    title: "Spring cleaning",
+    description: "That closet purge you've been putting off? It's worth more as a donation than a trash bag.",
+  },
+  {
+    icon: Package,
+    title: "Inherited items",
+    description: "Honor what you can't keep by sending it somewhere it'll actually be used.",
+  },
+  {
+    icon: GraduationCap,
+    title: "Life transitions",
+    description: "New job, new city, new chapter. Old furniture and gear don't have to follow you.",
+  },
+];
+
+function WhoItsForSection() {
+  return (
+    <section className="py-24 px-6 bg-brand-pink relative overflow-hidden">
+      <motion.div
+        animate={{ rotate: [0, 10, 0], scale: [1, 1.06, 1] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-12 right-[8%] w-14 hidden lg:block"
+      >
+        <CoinBlobSticker className="w-full h-full" />
+      </motion.div>
+      <motion.div
+        animate={{ y: [0, -10, 0], rotate: [-6, 6, -6] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+        className="absolute bottom-16 left-[6%] w-12 hidden lg:block"
+      >
+        <GiftSticker className="w-full h-full" />
+      </motion.div>
+      <div className="max-w-6xl mx-auto">
+        <div className="max-w-2xl mb-16">
+          <span className="text-brand-terracotta font-extrabold tracking-wider uppercase text-sm mb-4 block">
+            Sound Familiar?
+          </span>
+          <h2 className="text-4xl md:text-5xl mb-4 text-balance">
+            A few moments people usually start.
+          </h2>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-6">
+          {useCases.map((useCase, i) => {
+            const Icon = useCase.icon;
+            return (
+              <motion.div
+                key={useCase.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ type: "spring", stiffness: 240, damping: 22, delay: i * 0.08 }}
+                whileHover={{ y: -4 }}
+                className="flex gap-5 bg-brand-cream border-2 border-brand-navy rounded-2xl p-6 shadow-[4px_4px_0_0_#12333A]"
+              >
+                <div className="w-14 h-14 shrink-0 bg-brand-slate/20 rounded-xl flex items-center justify-center border-2 border-brand-navy">
+                  <Icon className="w-7 h-7 text-brand-navy" strokeWidth={2} />
+                </div>
+                <div>
+                  <h3 className="text-xl text-brand-navy mb-2">{useCase.title}</h3>
+                  <p className="text-brand-navy/70 font-medium text-pretty">
+                    {useCase.description}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const testimonials = [
+  {
+    quote:
+      "I made $340 clearing out my garage and every cent went to my kid's school. Never felt better about decluttering.",
+    person: "Priya M.",
+    detail: "Sold 14 items",
+  },
+  {
+    quote:
+      "I was skeptical it'd actually go to the shelter I picked. Got a receipt and a thank-you note. It's real.",
+    person: "Marcus T.",
+    detail: "Sold 6 items",
+  },
+  {
+    quote:
+      "Easiest way I've found to get rid of baby gear without the guilt of tossing stuff that still had life in it.",
+    person: "Aisha R.",
+    detail: "Sold 22 items",
+  },
+];
+
+function TestimonialsSection() {
+  return (
+    <section className="py-24 px-6 bg-brand-cream relative overflow-hidden">
+      <div className="max-w-6xl mx-auto">
+        <div className="max-w-2xl mb-16">
+          <h2 className="text-4xl md:text-5xl mb-4 text-balance">
+            Real people, real closets, real impact
+          </h2>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {testimonials.map((t, i) => {
+            const rotates = ["-rotate-2", "rotate-1", "-rotate-1"];
+            return (
+              <motion.div
+                key={t.person}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ type: "spring", stiffness: 230, damping: 22, delay: i * 0.1 }}
+                whileHover={{ rotate: 0, y: -6 }}
+                className={`bg-white border-2 border-brand-navy rounded-2xl p-7 shadow-[5px_5px_0_0_#12333A] ${rotates[i]}`}
+              >
+                <Quote className="w-8 h-8 text-brand-terracotta mb-4" strokeWidth={2} />
+                <p className="text-brand-navy font-bold leading-snug mb-6 text-pretty">
+                  &quot;{t.quote}&quot;
+                </p>
+                <div className="flex items-center justify-between pt-4 border-t-2 border-brand-navy/10">
+                  <span className="text-brand-navy font-bold">{t.person}</span>
+                  <span className="text-brand-slate text-sm font-bold">{t.detail}</span>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const faqs = [
+  {
+    question: "Is my stuff even worth anything?",
+    answer:
+      "Probably more than you think. Our pricing tool compares your item to thousands of recent local sales, so even well-used furniture, electronics, and clothing usually find a buyer.",
+  },
+  {
+    question: "How do I know the money actually goes to my cause?",
+    answer:
+      "Every sale is tracked end-to-end. You pick the nonprofit at listing time, and once an item sells, funds go directly to them through our verified partner network. You'll get a receipt for your records.",
+  },
+  {
+    question: "What can I sell?",
+    answer:
+      "Furniture, electronics, clothing, books, tools, kids' gear: almost anything in resellable condition. A few restricted categories (recalled items, hazardous materials) aren't allowed for safety reasons.",
+  },
+  {
+    question: "What if it doesn't sell?",
+    answer:
+      "You can relist at a lower price, or choose to donate it directly to your selected nonprofit for a tax receipt instead. No item has to go to waste.",
+  },
+  {
+    question: "Is meeting up with buyers safe?",
+    answer:
+      "Yes. We suggest verified public meetup spots in your area, and support secure shipping with escrow protection for higher-value items, so payment is only released once everything checks out.",
+  },
+];
+
+function FaqSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  return (
+    <section className="py-24 px-6 bg-brand-navy relative overflow-hidden">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl text-brand-cream mb-4 text-balance">
+            Questions? We&apos;ve got you.
+          </h2>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {faqs.map((faq, i) => {
+            const isOpen = openIndex === i;
+            return (
+              <motion.div
+                key={faq.question}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ type: "spring", stiffness: 240, damping: 24, delay: i * 0.05 }}
+                className="bg-brand-cream/5 border-2 border-brand-cream/20 rounded-2xl overflow-hidden"
+              >
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                  className="w-full flex items-center justify-between gap-4 p-5 text-left"
+                  aria-expanded={isOpen}
+                >
+                  <span className="text-brand-cream font-bold text-lg">{faq.question}</span>
+                  <motion.span
+                    animate={{ rotate: isOpen ? 45 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="shrink-0 text-brand-pink"
+                  >
+                    <Plus className="w-6 h-6" strokeWidth={2.5} />
+                  </motion.span>
+                </button>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <p className="px-5 pb-5 text-brand-cream/80 font-medium leading-relaxed text-pretty">
+                        {faq.answer}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ type: "spring", stiffness: 240, damping: 24, delay: 0.3 }}
+          className="flex items-center justify-center gap-2 mt-10 text-brand-cream/60 font-medium text-sm"
+        >
+          <ShieldCheck className="w-5 h-5 text-brand-slate" strokeWidth={2} />
+          Secure payments, verified nonprofits, protected every step of the way.
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <main className="flex-1 overflow-hidden">
@@ -370,28 +643,24 @@ export default function Home() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="fixed top-0 w-full z-50 bg-brand-cream/85 backdrop-blur-md border-b-2 border-brand-navy/10"
+        className="fixed top-0 w-full z-50 bg-brand-cream/95 backdrop-blur-md border-b-2 border-brand-navy"
       >
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <LogoMark className="h-10 w-10" />
-            <span className="font-display text-2xl text-brand-navy">
+            <LogoMark className="h-11 w-11" />
+            <span className="font-display text-2xl text-brand-navy tracking-tight">
               clutter<span className="text-brand-terracotta">.sale</span>
             </span>
           </div>
-          <div className="hidden md:flex items-center gap-8 font-bold text-brand-navy/90">
-            <a href="#how-it-works" className="hover:text-brand-terracotta transition-colors">
-              How it Works
-            </a>
-            <a href="#causes" className="hover:text-brand-terracotta transition-colors">
-              Featured Causes
-            </a>
+          <div className="hidden md:flex items-center gap-8 font-bold text-brand-navy">
+            <NavLink href="#how-it-works">The Journey</NavLink>
+            <NavLink href="#causes">Your Community</NavLink>
             <motion.button
               whileHover={{ rotate: -2, scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               className="bg-brand-navy text-brand-cream px-6 py-2.5 rounded-2xl border-2 border-brand-navy hover:bg-brand-terracotta hover:border-brand-terracotta transition-colors font-bold shadow-[3px_3px_0_0_#12333A]"
             >
-              Start Your Impact
+              Sell for Good
             </motion.button>
           </div>
         </div>
@@ -399,48 +668,48 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative pt-40 pb-28 md:pt-48 md:pb-36 px-6 bg-brand-pink overflow-hidden">
-        {/* Scattered stickers */}
+        {/* Scattered organic artifacts */}
         <motion.div
-          animate={{ rotate: [0, 8, 0], y: [0, -10, 0] }}
+          animate={{ rotate: [0, 8, 0], y: [0, -10, 0], scale: [1, 1.05, 1] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-28 left-[6%] w-16 md:w-20"
         >
-          <FlowerSticker className="w-full h-full drop-shadow-md" />
+          <SproutSticker className="w-full h-full drop-shadow-md" />
         </motion.div>
         <motion.div
-          animate={{ rotate: [-6, 6, -6] }}
+          animate={{ rotate: [-6, 6, -6], scale: [1, 1.08, 1] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-52 right-[8%] w-14 md:w-16 text-brand-terracotta"
+          className="absolute top-52 right-[8%] w-14 md:w-16"
         >
-          <Sparkles className="w-full h-full" strokeWidth={2.5} />
+          <StarBlobSticker className="w-full h-full drop-shadow-md" />
         </motion.div>
         <motion.div
-          animate={{ y: [0, -14, 0] }}
+          animate={{ y: [0, -14, 0], rotate: [-6, 0, -6] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="absolute bottom-16 left-[12%] w-16 md:w-20 -rotate-6"
+          className="absolute bottom-16 left-[12%] w-16 md:w-20"
         >
-          <TagSticker className="w-full h-full drop-shadow-md" />
+          <TagBlobSticker className="w-full h-full drop-shadow-md" />
         </motion.div>
         <motion.div
-          animate={{ rotate: [4, -4, 4] }}
+          animate={{ rotate: [4, -4, 4], y: [0, 8, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-28 right-[14%] w-16 md:w-20 rotate-6"
+          className="absolute bottom-28 right-[14%] w-16 md:w-20"
         >
-          <BoxSticker className="w-full h-full drop-shadow-md" />
+          <GiftSticker className="w-full h-full drop-shadow-md" />
         </motion.div>
         <motion.div
-          animate={{ rotate: [0, 15, 0] }}
+          animate={{ rotate: [0, 15, 0], scale: [1, 1.1, 1] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-40 right-[30%] w-10 text-brand-navy hidden md:block"
+          className="absolute top-40 right-[30%] w-10 hidden md:block"
         >
-          <Star className="w-full h-full" strokeWidth={2.5} />
+          <CoinBlobSticker className="w-full h-full" />
         </motion.div>
         <motion.div
           animate={{ y: [0, 10, 0], rotate: [-8, 0, -8] }}
           transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-40 left-[6%] w-10 text-brand-terracotta hidden md:block"
+          className="absolute bottom-40 left-[6%] w-10 hidden md:block"
         >
-          <Heart className="w-full h-full fill-brand-terracotta" strokeWidth={2.5} />
+          <HeartBlobSticker className="w-full h-full" />
         </motion.div>
 
         <div className="max-w-5xl mx-auto flex flex-col items-center text-center relative z-10">
@@ -519,6 +788,9 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Impact Stats — early credibility bar */}
+      <StatsSection />
+
       {/* Why It Matters — image-masked headline, parallax */}
       <WhyItMattersSection />
 
@@ -526,7 +798,21 @@ export default function Home() {
       <TheProblemSection />
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-24 px-6 bg-brand-cream relative">
+      <section id="how-it-works" className="py-24 px-6 bg-brand-cream relative overflow-hidden">
+        <motion.div
+          animate={{ rotate: [0, -8, 0], y: [0, 10, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-10 right-[6%] w-14 hidden lg:block"
+        >
+          <TagBlobSticker className="w-full h-full" />
+        </motion.div>
+        <motion.div
+          animate={{ y: [0, -12, 0], rotate: [6, -6, 6] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+          className="absolute bottom-10 left-[5%] w-12 hidden lg:block"
+        >
+          <SproutSticker className="w-full h-full" />
+        </motion.div>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <span className="text-brand-terracotta font-extrabold tracking-wider uppercase text-sm mb-4 block">
@@ -577,24 +863,33 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Who It's For — self-identification / use cases */}
+      <WhoItsForSection />
+
       {/* Featured Causes — blended editorial layout */}
       <CausesSection />
+
+      {/* Testimonials — seller-side social proof */}
+      <TestimonialsSection />
+
+      {/* FAQ — objection handling before the close */}
+      <FaqSection />
 
       {/* CTA Section */}
       <section className="py-32 bg-brand-terracotta text-center px-6 relative overflow-hidden">
         <motion.div
-          animate={{ rotate: [0, 10, 0] }}
+          animate={{ rotate: [0, 10, 0], scale: [1, 1.06, 1] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-16 left-[10%] w-16 opacity-80 hidden md:block"
         >
-          <FlowerSticker className="w-full h-full" />
+          <SproutSticker className="w-full h-full" />
         </motion.div>
         <motion.div
-          animate={{ y: [0, -12, 0] }}
+          animate={{ y: [0, -12, 0], rotate: [0, -8, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
-          className="absolute bottom-16 right-[10%] w-14 text-brand-navy opacity-80 hidden md:block"
+          className="absolute bottom-16 right-[10%] w-14 opacity-80 hidden md:block"
         >
-          <Sparkles className="w-full h-full" strokeWidth={2.5} />
+          <CoinBlobSticker className="w-full h-full" />
         </motion.div>
 
         <motion.div
