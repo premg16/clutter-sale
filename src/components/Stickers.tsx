@@ -1,23 +1,60 @@
-// Organic hand-drawn sticker artifacts, matching the logo's thick-outline
-// style. Silhouettes use uneven, wobbled curves rather than true circles/
-// polygons so they read as sketched rather than vector-perfect.
+// Hand-drawn sticker artifacts traced in the same thick-outline style as
+// the logo (see public/logo.jpg): navy ink outlines, flat color fills, a
+// slight hand-wobble instead of true circles/polygons. Each sticker is a
+// piece of the actual clutter-sale story — the item, the tag, the box it
+// came in, the new growth it funds — not generic decoration.
 
 const NAVY = "#12333A";
 const CREAM = "#F7F3EC";
 const PINK = "#F5D9DE";
 const TERRACOTTA = "#D97757";
+const TERRACOTTA_DARK = "#BB3F18";
 const SLATE = "#5C8A94";
 
 type StickerProps = { className?: string };
 
+// The logo's lamp: a sold/donated item on its own, tipped at a slight angle
+export function LampSticker({ className }: StickerProps) {
+  return (
+    <svg viewBox="0 0 60 70" fill="none" className={className} aria-hidden="true">
+      <g stroke={NAVY} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
+        <path d="M28 38v22" />
+        <path d="M20 60c3-1 13-1 16 0" />
+        <path
+          d="M14 20c1-6 8-11 14-11s13 5 14 11c1 3-1 5-4 5H18c-3 0-5-2-4-5z"
+          fill={TERRACOTTA}
+        />
+        <path d="M18 25 14 20h28l-4 5z" fill={TERRACOTTA_DARK} />
+      </g>
+    </svg>
+  );
+}
+
+// The logo's price tag: hole, string loop, dollar mark
+export function TagSticker({ className }: StickerProps) {
+  return (
+    <svg viewBox="0 0 60 60" fill="none" className={className} aria-hidden="true">
+      <g stroke={NAVY} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
+        <path d="M37 8c3-2 7-2 9 0" />
+        <circle cx="41" cy="13" r="4" fill={CREAM} />
+        <path
+          d="M32 6h-9L7 22c-2 2-2 5 0 7l17 17c2 2 5 2 7 0l16-16c2-2 2-5 0-7L32 6z"
+          fill={TERRACOTTA}
+        />
+        <text x="24" y="34" fontSize="15" fontWeight="700" fill={CREAM} textAnchor="middle">
+          $
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+// A sprig of new growth, echoing the logo's small leaf accent
 export function SproutSticker({ className }: StickerProps) {
   return (
     <svg viewBox="0 0 60 60" fill="none" className={className} aria-hidden="true">
       <g stroke={NAVY} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
-        <path
-          d="M30 52c1-10 0-18-1-24"
-          fill="none"
-        />
+        <path d="M30 52c1-10 0-18-1-24" />
         <path
           d="M29 30c-4-9-12-13-21-12-1 10 4 18 13 21 4 1 7 0 8-2z"
           fill={SLATE}
@@ -31,44 +68,21 @@ export function SproutSticker({ className }: StickerProps) {
   );
 }
 
-export function GiftSticker({ className }: StickerProps) {
+// One open flap of the logo's cardboard box, as if a corner drifted loose
+export function BoxFlapSticker({ className }: StickerProps) {
   return (
     <svg viewBox="0 0 60 60" fill="none" className={className} aria-hidden="true">
       <g stroke={NAVY} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
-        <path
-          d="M11 27c-1-2-1-5 1-6 3-2 34-2 37 0 2 1 2 4 1 6-3 2-36 2-39 0z"
-          fill={PINK}
-        />
-        <path d="M14 28c-1 6-1 17 0 24 5 2 27 2 32 0 1-7 1-18 0-24" fill={TERRACOTTA} />
-        <path d="M30 27c0 9-1 18 0 25" />
-        <path
-          d="M29 22c-6 2-13-1-13-7 0-4 4-6 7-4 4 2 6 7 6 11z"
-          fill={SLATE}
-        />
-        <path
-          d="M31 22c6 2 13-1 13-7 0-4-4-6-7-4-4 2-6 7-6 11z"
-          fill={SLATE}
-        />
+        <path d="M6 22 30 10 54 22 30 34Z" fill={CREAM} />
+        <path d="M6 22v8l24 12v-8Z" fill={SLATE} />
+        <path d="M54 22v8L30 42v-8Z" fill={TERRACOTTA} />
       </g>
     </svg>
   );
 }
 
-export function TagBlobSticker({ className }: StickerProps) {
-  return (
-    <svg viewBox="0 0 60 60" fill="none" className={className} aria-hidden="true">
-      <g stroke={NAVY} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
-        <path
-          d="M9 9c8-2 17-2 24 1 3 1 5 3 7 5 6 6 12 12 17 19 2 3 2 6-1 9-6 6-13 12-20 17-3 2-6 2-9-1-7-7-13-14-19-22-2-3-3-6-3-10 0-6 1-13 4-18z"
-          fill={TERRACOTTA}
-        />
-        <circle cx="21" cy="21" r="4.5" fill={CREAM} />
-      </g>
-    </svg>
-  );
-}
-
-export function HeartBlobSticker({ className }: StickerProps) {
+// Care behind the transaction: not in the logo, but the emotional register
+export function HeartSticker({ className }: StickerProps) {
   return (
     <svg viewBox="0 0 60 60" fill="none" className={className} aria-hidden="true">
       <path
@@ -82,21 +96,8 @@ export function HeartBlobSticker({ className }: StickerProps) {
   );
 }
 
-export function StarBlobSticker({ className }: StickerProps) {
-  return (
-    <svg viewBox="0 0 60 60" fill="none" className={className} aria-hidden="true">
-      <path
-        d="M31 6c2 8 4 14 9 19 5 4 11 6 18 7-7 2-13 5-18 9-5 5-7 11-9 19-2-8-4-14-9-19-5-4-11-6-18-7 7-2 13-5 18-9 5-5 7-11 9-19z"
-        fill={CREAM}
-        stroke={NAVY}
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-export function CoinBlobSticker({ className }: StickerProps) {
+// The money that results, once the item sells
+export function CoinSticker({ className }: StickerProps) {
   return (
     <svg viewBox="0 0 60 60" fill="none" className={className} aria-hidden="true">
       <g stroke={NAVY} strokeWidth="2.5" strokeLinejoin="round">
@@ -112,6 +113,27 @@ export function CoinBlobSticker({ className }: StickerProps) {
           $
         </text>
       </g>
+    </svg>
+  );
+}
+
+// A hand-drawn wavering line, used to connect timeline moments
+export function SquiggleConnector({ className }: StickerProps) {
+  return (
+    <svg
+      viewBox="0 0 20 200"
+      preserveAspectRatio="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M10 0c6 20-8 35-2 55s10 35 2 55 6 35 0 55 8 25 0 35"
+        fill="none"
+        stroke={NAVY}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeDasharray="1 10"
+      />
     </svg>
   );
 }

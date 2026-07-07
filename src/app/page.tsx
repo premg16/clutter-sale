@@ -2,15 +2,13 @@
 
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import {
-  Heart,
   ArrowRight,
-  Star,
   BookOpen,
   PawPrint,
   Sprout,
   Quote,
-  Package,
   Home as HomeIcon,
+  Package,
   GraduationCap,
   Plus,
   ShieldCheck,
@@ -20,12 +18,13 @@ import { useRef, useState } from "react";
 import { useLenis } from "lenis/react";
 import { LogoMark } from "@/components/Logo";
 import {
+  LampSticker,
+  TagSticker,
   SproutSticker,
-  GiftSticker,
-  TagBlobSticker,
-  HeartBlobSticker,
-  StarBlobSticker,
-  CoinBlobSticker,
+  BoxFlapSticker,
+  HeartSticker,
+  CoinSticker,
+  SquiggleConnector,
 } from "@/components/Stickers";
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -127,21 +126,21 @@ const steps = [
     title: "Snap & List",
     description:
       "Take a few quick photos from your phone and let AI title, price, and describe each item for you.",
-    rotate: "-rotate-2",
+    Sticker: BoxFlapSticker,
   },
   {
     number: "02",
     title: "Auction & Sell",
     description:
       "List at a fixed price or let local buyers bid. Once it sells, the money flows directly to your chosen cause.",
-    rotate: "rotate-0",
+    Sticker: TagSticker,
   },
   {
     number: "03",
     title: "Safe Pickup",
     description:
       "Meet up safely in your neighborhood or ship with secure escrow. Payment is protected end to end.",
-    rotate: "rotate-2",
+    Sticker: CoinSticker,
   },
 ];
 
@@ -180,14 +179,14 @@ function WhyItMattersSection() {
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-16 left-[8%] w-14 md:w-16 z-10 opacity-90 hidden md:block"
       >
-        <StarBlobSticker className="w-full h-full" />
+        <LampSticker className="w-full h-full" />
       </motion.div>
       <motion.div
         animate={{ y: [0, 12, 0], rotate: [-6, 6, -6] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
         className="absolute bottom-24 right-[10%] w-14 md:w-16 z-10 opacity-90 hidden md:block"
       >
-        <HeartBlobSticker className="w-full h-full" />
+        <HeartSticker className="w-full h-full" />
       </motion.div>
 
       <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center">
@@ -423,43 +422,41 @@ function WhoItsForSection() {
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-12 right-[8%] w-14 hidden lg:block"
       >
-        <CoinBlobSticker className="w-full h-full" />
+        <CoinSticker className="w-full h-full" />
       </motion.div>
       <motion.div
         animate={{ y: [0, -10, 0], rotate: [-6, 6, -6] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
         className="absolute bottom-16 left-[6%] w-12 hidden lg:block"
       >
-        <GiftSticker className="w-full h-full" />
+        <BoxFlapSticker className="w-full h-full" />
       </motion.div>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="max-w-2xl mb-16">
-          <span className="text-brand-terracotta font-extrabold tracking-wider uppercase text-sm mb-4 block">
-            Sound Familiar?
-          </span>
           <h2 className="text-4xl md:text-5xl mb-4 text-balance">
             A few moments people usually start.
           </h2>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-6">
+        <div className="flex flex-col">
           {useCases.map((useCase, i) => {
             const Icon = useCase.icon;
             return (
               <motion.div
                 key={useCase.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ type: "spring", stiffness: 240, damping: 22, delay: i * 0.08 }}
-                whileHover={{ y: -4 }}
-                className="flex gap-5 bg-brand-cream border-2 border-brand-navy rounded-2xl p-6 shadow-[4px_4px_0_0_#12333A]"
+                className={`flex items-center gap-6 md:gap-10 py-8 ${
+                  i !== 0 ? "border-t-2 border-brand-navy/15" : ""
+                }`}
               >
-                <div className="w-14 h-14 shrink-0 bg-brand-slate/20 rounded-xl flex items-center justify-center border-2 border-brand-navy">
-                  <Icon className="w-7 h-7 text-brand-navy" strokeWidth={2} />
+                <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 text-brand-navy">
+                  <Icon className="w-full h-full" strokeWidth={1.75} />
                 </div>
                 <div>
-                  <h3 className="text-xl text-brand-navy mb-2">{useCase.title}</h3>
+                  <h3 className="text-xl md:text-2xl text-brand-navy mb-1">{useCase.title}</h3>
                   <p className="text-brand-navy/70 font-medium text-pretty">
                     {useCase.description}
                   </p>
@@ -496,38 +493,42 @@ const testimonials = [
 
 function TestimonialsSection() {
   return (
-    <section className="py-24 px-6 bg-brand-cream relative overflow-hidden">
-      <div className="max-w-6xl mx-auto">
-        <div className="max-w-2xl mb-16">
+    <section className="py-24 md:py-32 px-6 bg-brand-cream relative overflow-hidden">
+      <motion.div
+        animate={{ rotate: [0, -8, 0], y: [0, 10, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-16 right-[8%] w-14 hidden lg:block"
+      >
+        <HeartSticker className="w-full h-full" />
+      </motion.div>
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-16">
           <h2 className="text-4xl md:text-5xl mb-4 text-balance">
             Real people, real closets, real impact
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((t, i) => {
-            const rotates = ["-rotate-2", "rotate-1", "-rotate-1"];
-            return (
-              <motion.div
-                key={t.person}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ type: "spring", stiffness: 230, damping: 22, delay: i * 0.1 }}
-                whileHover={{ rotate: 0, y: -6 }}
-                className={`bg-white border-2 border-brand-navy rounded-2xl p-7 shadow-[5px_5px_0_0_#12333A] ${rotates[i]}`}
-              >
-                <Quote className="w-8 h-8 text-brand-terracotta mb-4" strokeWidth={2} />
-                <p className="text-brand-navy font-bold leading-snug mb-6 text-pretty">
-                  &quot;{t.quote}&quot;
-                </p>
-                <div className="flex items-center justify-between pt-4 border-t-2 border-brand-navy/10">
-                  <span className="text-brand-navy font-bold">{t.person}</span>
-                  <span className="text-brand-slate text-sm font-bold">{t.detail}</span>
-                </div>
-              </motion.div>
-            );
-          })}
+        <div className="flex flex-col">
+          {testimonials.map((t, i) => (
+            <motion.div
+              key={t.person}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ type: "spring", stiffness: 230, damping: 22, delay: i * 0.1 }}
+              className={`py-10 ${i !== 0 ? "border-t-2 border-brand-navy/15" : ""}`}
+            >
+              <Quote className="w-7 h-7 text-brand-terracotta mb-4" strokeWidth={2} />
+              <p className="text-brand-navy text-xl md:text-2xl font-bold leading-snug mb-5 text-pretty">
+                &quot;{t.quote}&quot;
+              </p>
+              <div className="flex items-center gap-3">
+                <span className="text-brand-navy font-bold">{t.person}</span>
+                <span className="text-brand-navy/40">·</span>
+                <span className="text-brand-slate text-sm font-bold">{t.detail}</span>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
@@ -681,35 +682,35 @@ export default function Home() {
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-52 right-[8%] w-14 md:w-16"
         >
-          <StarBlobSticker className="w-full h-full drop-shadow-md" />
+          <LampSticker className="w-full h-full drop-shadow-md" />
         </motion.div>
         <motion.div
           animate={{ y: [0, -14, 0], rotate: [-6, 0, -6] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
           className="absolute bottom-16 left-[12%] w-16 md:w-20"
         >
-          <TagBlobSticker className="w-full h-full drop-shadow-md" />
+          <TagSticker className="w-full h-full drop-shadow-md" />
         </motion.div>
         <motion.div
           animate={{ rotate: [4, -4, 4], y: [0, 8, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute bottom-28 right-[14%] w-16 md:w-20"
         >
-          <GiftSticker className="w-full h-full drop-shadow-md" />
+          <BoxFlapSticker className="w-full h-full drop-shadow-md" />
         </motion.div>
         <motion.div
           animate={{ rotate: [0, 15, 0], scale: [1, 1.1, 1] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-40 right-[30%] w-10 hidden md:block"
         >
-          <CoinBlobSticker className="w-full h-full" />
+          <CoinSticker className="w-full h-full" />
         </motion.div>
         <motion.div
           animate={{ y: [0, 10, 0], rotate: [-8, 0, -8] }}
           transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           className="absolute bottom-40 left-[6%] w-10 hidden md:block"
         >
-          <HeartBlobSticker className="w-full h-full" />
+          <HeartSticker className="w-full h-full" />
         </motion.div>
 
         <div className="max-w-5xl mx-auto flex flex-col items-center text-center relative z-10">
@@ -797,27 +798,10 @@ export default function Home() {
       {/* The Problem — second photo-grounded storytelling moment */}
       <TheProblemSection />
 
-      {/* How It Works */}
-      <section id="how-it-works" className="py-24 px-6 bg-brand-cream relative overflow-hidden">
-        <motion.div
-          animate={{ rotate: [0, -8, 0], y: [0, 10, 0] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-10 right-[6%] w-14 hidden lg:block"
-        >
-          <TagBlobSticker className="w-full h-full" />
-        </motion.div>
-        <motion.div
-          animate={{ y: [0, -12, 0], rotate: [6, -6, 6] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
-          className="absolute bottom-10 left-[5%] w-12 hidden lg:block"
-        >
-          <SproutSticker className="w-full h-full" />
-        </motion.div>
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="text-brand-terracotta font-extrabold tracking-wider uppercase text-sm mb-4 block">
-              The Journey
-            </span>
+      {/* How It Works — a single spine, three waypoints, no cards */}
+      <section id="how-it-works" className="py-24 md:py-32 px-6 bg-brand-cream relative overflow-hidden">
+        <div className="max-w-2xl mx-auto">
+          <div className="mb-20 md:mb-28">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -825,40 +809,49 @@ export default function Home() {
               transition={{ type: "spring", stiffness: 250, damping: 22 }}
               className="text-4xl md:text-5xl mb-6"
             >
-              How it Works
+              From closet to comeback
             </motion.h2>
-            <p className="text-lg text-brand-navy/70 max-w-2xl mx-auto font-medium">
+            <p className="text-lg text-brand-navy/70 max-w-lg font-medium">
               A few minutes from your couch to a real donation for a real
               nonprofit.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12 relative">
-            {steps.map((step, i) => (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ type: "spring", stiffness: 250, damping: 22, delay: i * 0.12 }}
-                whileHover={{ y: -6 }}
-                className={`relative flex flex-col items-center text-center bg-white border-2 border-brand-navy rounded-2xl p-8 shadow-[5px_5px_0_0_#12333A] ${step.rotate}`}
-              >
-                <span className="absolute -top-4 -right-4 text-brand-terracotta w-8 h-8">
-                  <Star className="w-full h-full fill-brand-terracotta" strokeWidth={2} />
-                </span>
-                <span className="absolute -bottom-3 -left-3 text-brand-slate w-7 h-7">
-                  <Heart className="w-full h-full fill-brand-slate" strokeWidth={2} />
-                </span>
-                <div className="w-20 h-20 bg-brand-pink rounded-2xl flex items-center justify-center mb-6 border-2 border-brand-navy">
-                  <span className="font-display text-3xl text-brand-navy">{step.number}</span>
-                </div>
-                <h3 className="text-2xl mb-3">{step.title}</h3>
-                <p className="text-brand-navy/80 leading-relaxed font-medium">
-                  {step.description}
-                </p>
-              </motion.div>
-            ))}
+          <div className="relative">
+            <SquiggleConnector className="absolute left-9 md:left-11 top-4 bottom-4 w-4 h-full" />
+
+            <div className="flex flex-col gap-16 md:gap-20">
+              {steps.map((step, i) => {
+                const Sticker = step.Sticker;
+                return (
+                  <motion.div
+                    key={step.number}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ type: "spring", stiffness: 250, damping: 22, delay: i * 0.1 }}
+                    className="relative flex items-start gap-6 md:gap-10 pl-2"
+                  >
+                    <motion.div
+                      animate={{ rotate: [-4, 4, -4] }}
+                      transition={{ duration: 6 + i, repeat: Infinity, ease: "easeInOut" }}
+                      className="relative z-10 shrink-0 w-[72px] h-[72px] md:w-[88px] md:h-[88px] bg-brand-cream"
+                    >
+                      <Sticker className="w-full h-full drop-shadow-md" />
+                    </motion.div>
+                    <div className="pt-1 md:pt-3">
+                      <span className="font-display text-brand-terracotta/50 text-xl block mb-1">
+                        {step.number}
+                      </span>
+                      <h3 className="text-2xl md:text-3xl mb-3">{step.title}</h3>
+                      <p className="text-brand-navy/80 leading-relaxed font-medium max-w-sm">
+                        {step.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
@@ -889,7 +882,7 @@ export default function Home() {
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
           className="absolute bottom-16 right-[10%] w-14 opacity-80 hidden md:block"
         >
-          <CoinBlobSticker className="w-full h-full" />
+          <CoinSticker className="w-full h-full" />
         </motion.div>
 
         <motion.div
