@@ -34,7 +34,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="min-h-screen flex flex-col selection:bg-brand-pink selection:text-brand-navy">
+      <body className="min-h-dvh flex flex-col selection:bg-brand-pink selection:text-brand-navy">
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
