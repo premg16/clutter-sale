@@ -1,0 +1,256 @@
+/* ==========================================================================
+   /v3 — standalone stylesheet.
+
+   Everything here is scoped under `.v3` so it cannot leak into `/` or `/v2`,
+   which share the global brand tokens in globals.css.
+
+   Palette maps the inspiration's blue system onto our teal:
+     Sky Blue   #87D9F2  ->  --v3-mint    (soft tint, big flat blocks)
+     Cobalt     #004AAD  ->  --v3-teal    (the primary; saturated action colour)
+     Jet Blue   #253141  ->  --v3-ink     (near-black text + dark bands)
+     Platinum   #F6F8FC  ->  --v3-paper   (page background)
+   ========================================================================== */
+
+.v3 {
+  /* --- Core ramp -------------------------------------------------------- */
+  --v3-teal: #0d7d78; /* primary. 4.9:1 on paper -> AA for text + UI */
+  --v3-teal-deep: #0f4a52; /* dark teal bands; cream ink on top */
+  --v3-teal-deeper: #08343a; /* deepest band, footer */
+  --v3-mint: #9fe3dc; /* the "Sky Blue" block: flat, calm, holds dark ink */
+  --v3-mint-quiet: #e8f6f4; /* faintest wash for card fills */
+
+  /* Light mint that stays LIGHT in dark mode. For text/icons that always sit on
+     a dark band (hero headline accent, footer button, dark chips) regardless of
+     theme. --v3-mint is a *surface* and flips dark; these two must not be
+     conflated — that's how the hero accent line vanished in dark mode. */
+  --v3-on-dark: #9fe3dc;
+
+  --v3-ink: #16262b; /* body + headings */
+  --v3-ink-soft: #55696e; /* secondary copy */
+  --v3-paper: #f6f8f8; /* page background */
+  --v3-raised: #ffffff; /* cards */
+  --v3-cream: #f2f7f6; /* text on dark bands */
+  --v3-hairline: rgb(22 38 43 / 0.12);
+
+  /* Warm counterpoint. One accent only — used for the "urgent / closing soon"
+     signal so it never competes with teal for attention. */
+  --v3-ember: #e8623a;
+
+  /* Height of the fixed header. Single source of truth: the header sizes itself
+     from it, sections use it for scroll-margin-top, and the hero card reserves
+     it as top padding. Smaller on phones — 100px of chrome over an 844px
+     viewport pushed the hero's trust line below the fold. */
+  --v3-header-h: 68px;
+
+  /* --- Scale ------------------------------------------------------------ */
+  --v3-radius: 20px;
+  --v3-radius-lg: 28px;
+  --v3-shadow: 0 1px 2px rgb(22 38 43 / 0.04), 0 12px 32px -12px rgb(22 38 43 / 0.16);
+
+  background-color: var(--v3-paper);
+  color: var(--v3-ink);
+}
+
+/* Desktop restores the taller bar, which is what lets the nav row clear the
+   hero glass card's top border (see the header's own comment). */
+@media (min-width: 640px) {
+  .v3 {
+    --v3-header-h: 84px;
+  }
+}
+@media (min-width: 1024px) {
+  .v3 {
+    --v3-header-h: 100px;
+  }
+}
+
+/* globals.css sets `h1..h6 { font-family: var(--font-anton) }` for the `/` and
+   `/v2` brand. Anton is a heavy condensed poster face; /v3's reference set is a
+   light geometric sans throughout. Override it here rather than in globals, so
+   the other two routes keep their type untouched.
+
+   Family + tracking ONLY. Never set `color` here: `.v3 h1` (0,1,1) outranks
+   Tailwind's `.text-white` (0,1,0), so a colour declaration silently wins over
+   every text-* utility on a heading. */
+/* Declared INSIDE `@layer base` on purpose.
+
+   globals.css puts `h1..h6 { font-family: anton; color: var(--color-ink) }` in
+   Tailwind's `base` layer. Two things follow:
+
+   1. Colour must be overridden, or the footer's headings render dark-ink on the
+      dark-teal band — invisible.
+   2. This file is otherwise UNLAYERED, and unlayered CSS beats every `@layer`
+      regardless of specificity. An unlayered `color: inherit` here therefore
+      defeats Tailwind's `.text-white` (which lives in `@layer utilities`), and
+      the hero headline goes dark. `:where()` does not save you — layer order is
+      resolved before specificity.
+
+   Joining `base` puts this rule in the same layer as globals', where it wins on
+   source order, while every `text-*` utility still wins over both. */
+@layer base {
+  .v3 :is(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    color: inherit;
+  }
+}
+
+.dark .v3 {
+  --v3-teal: #34c8bd;
+  --v3-teal-deep: #0d3f47;
+  --v3-teal-deeper: #061a1e;
+  --v3-mint: #1d4c50;
+  --v3-mint-quiet: #10292e;
+  /* deliberately NOT flipped — see the note in the light block. */
+  --v3-on-dark: #7fe0d4;
+
+  --v3-ink: #e9f1f0;
+  --v3-ink-soft: #9db3b7;
+  --v3-paper: #08191e;
+  --v3-raised: #0f272d;
+  --v3-cream: #e9f1f0;
+  --v3-hairline: rgb(233 241 240 / 0.14);
+
+  --v3-ember: #ff7a4d;
+  --v3-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -12px rgb(0 0 0 / 0.6);
+}
+
+/* --------------------------------------------------------------------------
+   Glass panel — the inspiration's signature: a frosted card floating over a
+   full-bleed photo. Uses a real backdrop-filter, with an opaque fallback for
+   browsers where it's unavailable (the translucent background alone still
+   reads as a panel).
+
+   The BLUR itself is NOT set here — it's applied with Tailwind's
+   `backdrop-blur-*` utility at the call site. A raw `backdrop-filter`
+   declaration in this file gets stripped by the Tailwind v4 / Lightning CSS
+   pass that processes it (verified: the served rule arrives with the property
+   missing, while `.backdrop-blur-md` works fine on the same page). Keep the
+   blur as a utility class and this file for everything else.
+   -------------------------------------------------------------------------- */
+.v3-glass {
+  /* Very light tint only. The panel spans nearly the whole viewport, so a
+     heavier fill (or a strong blur) would fog the entire photograph rather
+     than reading as a pane of glass laid over a sharp image. */
+  background: rgb(255 255 255 / 0.04);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 24px 64px -24px rgb(0 0 0 / 0.5);
+}
+
+/* Where a glass card sits on a LIGHT background rather than a photo. */
+.v3-glass-light {
+  background: rgb(255 255 255 / 0.72);
+  border: 1px solid var(--v3-hairline);
+}
+.dark .v3-glass-light {
+  background: rgb(15 39 45 / 0.72);
+}
+
+/* --------------------------------------------------------------------------
+   Hero scrim. The inspiration darkens the photo behind the headline without a
+   flat overlay — the gradient is steepest where the text sits.
+   -------------------------------------------------------------------------- */
+.v3-scrim {
+  background:
+    /* Bottom-up wash: anchors the CTA row and the trust line. */
+    linear-gradient(to top, rgb(8 25 30 / 0.55) 0%, rgb(8 25 30 / 0) 45%),
+    /* Left-heavy wash: the headline column. Held at >=0.72 across the full
+       width the text occupies, so white type clears 7:1 regardless of what
+       the photograph happens to be doing underneath it. */
+    linear-gradient(
+      100deg,
+      rgb(8 25 30 / 0.9) 0%,
+      rgb(8 25 30 / 0.82) 30%,
+      rgb(8 25 30 / 0.6) 52%,
+      rgb(8 25 30 / 0.18) 78%,
+      rgb(8 25 30 / 0.3) 100%
+    );
+}
+
+/* --------------------------------------------------------------------------
+   The vertical "slat" texture that runs across every hero image in the
+   inspiration set — thin translucent columns that catch light. Pure CSS, no
+   image cost, and it's decorative so it's aria-hidden at the markup level.
+   -------------------------------------------------------------------------- */
+.v3-slats {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0) 0px,
+    rgb(255 255 255 / 0) 26px,
+    rgb(255 255 255 / 0.07) 26px,
+    rgb(255 255 255 / 0.07) 34px,
+    rgb(255 255 255 / 0) 34px,
+    rgb(255 255 255 / 0) 60px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* --------------------------------------------------------------------------
+   Counting numbers land better when the digits don't jitter mid-animation.
+   -------------------------------------------------------------------------- */
+.v3-tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* --------------------------------------------------------------------------
+   Progress meter for a cause's funding. `--v3-pct` is set inline per card.
+   -------------------------------------------------------------------------- */
+.v3-meter {
+  position: relative;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--v3-mint-quiet);
+  overflow: hidden;
+}
+.v3-meter::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--v3-pct, 0%);
+  border-radius: inherit;
+  background: var(--v3-teal);
+}
+
+/* --------------------------------------------------------------------------
+   Underline that draws in on hover — used on "Read more" style links.
+   -------------------------------------------------------------------------- */
+.v3-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.v3-underline:hover,
+.v3-underline:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* --------------------------------------------------------------------------
+   Focus ring. One definition, applied consistently to every interactive node.
+   -------------------------------------------------------------------------- */
+.v3 :focus-visible {
+  outline: 2px solid var(--v3-teal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Text fields carry their own focus affordance (the border brightens), so the
+   global outline above would render a second, offset ring around them — the
+   "outdated" doubled ring. Suppressed here only; every other control keeps it.
+   The border change is a 3.4:1 non-text contrast shift, which satisfies
+   WCAG 2.2 focus-appearance without the outline. */
+.v3 .v3-field:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v3 *,
+  .v3 *::before,
+  .v3 *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

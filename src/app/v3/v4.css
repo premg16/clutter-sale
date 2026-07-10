@@ -1,0 +1,650 @@
+/* ==========================================================================
+   /v4 — standalone stylesheet.
+
+   Everything is scoped under `.v4` so it cannot leak into `/`, `/v2` or `/v3`.
+   The route mounts with `data-v4` on the wrapper (see layout.tsx) and `.v4` on
+   the page root, mirroring the convention the other versions use.
+
+   Palette maps the inspiration's charity-green/yellow system onto our teal,
+   which the brief requires stays present:
+
+     Forest green  #14452F  ->  --v4-forest   (the dark bands, footer, hero)
+     Cream         #FBF8F0  ->  --v4-paper    (page background)
+     Marigold      #FFCF3F  ->  --v4-gold     (the yellow sidebar + callout)
+     Coral         #F4552B  ->  --v4-ember    (single warm accent, "urgent")
+
+   Teal is the primary action colour and the tonal parent of the greens: the
+   forest is a desaturated dark teal, not a true green, so the family reads as
+   one system rather than two.
+   ========================================================================== */
+
+.v4 {
+  /* --- Core ramp -------------------------------------------------------- */
+  /* Primary. 4.6:1 on paper -> AA for UI + large text. Body copy never uses
+     this; it uses --v4-ink. */
+  --v4-teal: #0c7b74;
+  --v4-teal-bright: #12a49a; /* hover / focus lift */
+
+  /* The dark bands. Deep, teal-leaning green so it sits in the same family as
+     --v4-teal instead of reading as a separate green brand. */
+  --v4-forest: #0f3d33;
+  --v4-forest-deep: #0a2b25; /* footer, deepest band */
+
+  /* Light mint that stays LIGHT in dark mode. For type/icons that always sit
+     on a dark band regardless of theme. --v4-mint is a *surface* and flips;
+     conflating the two is how an accent silently vanishes in dark mode. */
+  --v4-on-dark: #9fe0d3;
+  --v4-mint: #cdeee5; /* flat tint block */
+  --v4-mint-quiet: #e9f6f2; /* faintest card wash */
+
+  /* Marigold. The inspiration's yellow sidebar + "have questions" callout.
+     Always carries dark ink — it never holds white text. */
+  --v4-gold: #ffcf3f;
+  --v4-gold-deep: #f0b71d;
+  --v4-on-gold: #14251f;
+
+  /* One warm accent, reserved for urgency (auction closing, match ending) so
+     it never competes with teal for the eye. */
+  --v4-ember: #ef5a2c;
+
+  --v4-ink: #14251f; /* body + headings */
+  --v4-ink-soft: #566b63; /* secondary copy. 4.7:1 on paper */
+  --v4-paper: #fbf8f0; /* page background (cream) */
+  --v4-raised: #ffffff; /* cards */
+  --v4-cream: #f4f1e8; /* type on dark bands */
+  --v4-hairline: rgb(20 37 31 / 0.12);
+
+  /* --- Scale ------------------------------------------------------------ */
+  --v4-radius: 16px;
+  --v4-radius-lg: 26px;
+  --v4-shadow: 0 1px 2px rgb(20 37 31 / 0.04), 0 14px 36px -14px rgb(20 37 31 / 0.18);
+  --v4-shadow-lift: 0 2px 4px rgb(20 37 31 / 0.06), 0 26px 54px -18px rgb(20 37 31 / 0.28);
+
+  /* Header height. Consumed by scroll-margin + the lenis anchor offset so the
+     two can never drift apart. */
+  --v4-header: 76px;
+
+  background-color: var(--v4-paper);
+  color: var(--v4-ink);
+}
+
+.dark .v4 {
+  --v4-teal: #2fc4b6;
+  --v4-teal-bright: #57d9cc;
+
+  --v4-forest: #0d2e28;
+  --v4-forest-deep: #061a17;
+
+  --v4-mint: #17423a;
+  --v4-mint-quiet: #102b26;
+
+  --v4-gold: #ffcf3f; /* gold stays gold — it's a light-on-dark accent block */
+  --v4-gold-deep: #ffdd74;
+
+  --v4-ember: #ff7a4d;
+
+  --v4-ink: #e8f0ec;
+  --v4-ink-soft: #9fb5ac;
+  --v4-paper: #071714;
+  --v4-raised: #0e2822;
+  --v4-cream: #e8f0ec;
+  --v4-hairline: rgb(232 240 236 / 0.14);
+
+  --v4-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 14px 36px -14px rgb(0 0 0 / 0.6);
+  --v4-shadow-lift: 0 2px 4px rgb(0 0 0 / 0.4), 0 26px 54px -18px rgb(0 0 0 / 0.7);
+}
+
+/* --------------------------------------------------------------------------
+   Type. globals.css sets `h1..h6 { font-family: var(--font-anton) }` for the
+   `/` brand. The inspiration is a high-contrast editorial serif for display
+   and a plain grotesque for everything else. Override family + tracking ONLY.
+
+   Never set `color` here: `.v4 h1` (0,1,1) outranks Tailwind's `.text-white`
+   (0,1,0), so a colour declaration would silently beat every text-* utility.
+   -------------------------------------------------------------------------- */
+.v4 :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Section eyebrows + nav + buttons run on the grotesque, not the serif. */
+.v4-eyebrow {
+  font-family: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.v4-tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* --------------------------------------------------------------------------
+   Interactive affordances.
+
+   The brief calls this out explicitly: *every* click target shows a pointer.
+   Rather than hanging `cursor-pointer` on each call site (and inevitably
+   missing one), assert it once for everything that is genuinely clickable.
+   `<button>` defaults to `cursor: default` in every browser — this is the fix.
+   -------------------------------------------------------------------------- */
+.v4 :is(a[href], button, summary, [role="button"], label[for], select) {
+  cursor: pointer;
+}
+
+/* ...but a disabled control is not clickable, and must not claim to be. */
+.v4 :is(button, [role="button"]):disabled,
+.v4 [aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* One focus ring, applied to every interactive node. Uses :focus-visible so it
+   only appears for keyboard/AT users, never on mouse click. */
+.v4 :focus-visible {
+  outline: 2px solid var(--v4-teal);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Anchor targets must clear the fixed header when nav-scrolled to. Kept in the
+   same file as --v4-header so they stay in lockstep. */
+.v4 [id] {
+  scroll-margin-top: calc(var(--v4-header) + 16px);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons. Two weights: solid (primary action) and outline (secondary).
+   Lift on hover is transform+shadow only — both compositor properties, so the
+   hover never triggers layout.
+   -------------------------------------------------------------------------- */
+.v4-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.75rem 1.375rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.v4-btn:hover {
+  transform: translateY(-2px);
+}
+.v4-btn:active {
+  transform: translateY(0);
+}
+
+.v4-btn-solid {
+  background: var(--v4-teal);
+  color: #fff;
+  box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--v4-teal) 70%, transparent);
+}
+.v4-btn-solid:hover {
+  background: var(--v4-teal-bright);
+  box-shadow: 0 14px 30px -10px color-mix(in srgb, var(--v4-teal) 75%, transparent);
+}
+.dark .v4-btn-solid {
+  color: var(--v4-forest-deep);
+}
+
+.v4-btn-gold {
+  background: var(--v4-ember);
+  color: #fff;
+  box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--v4-ember) 70%, transparent);
+}
+.v4-btn-gold:hover {
+  background: color-mix(in srgb, var(--v4-ember) 88%, #fff);
+}
+
+.v4-btn-outline {
+  border: 1.5px solid currentColor;
+  background: transparent;
+}
+.v4-btn-outline:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+/* Store badges. Same lift as .v4-btn, but square-ish and self-coloured — the
+   Apple/Play glyphs carry their own brand, so the chip must not tint them. */
+.v4-badge {
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.v4-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--v4-shadow-lift);
+}
+
+/* --------------------------------------------------------------------------
+   The diagonal ticker. The inspiration runs two ribbons crossing at a slight
+   angle beneath the hero. `translateX(-50%)` pairs with a duplicated,
+   aria-hidden track so the loop is seamless.
+   -------------------------------------------------------------------------- */
+@keyframes v4-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.v4-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: v4-marquee 34s linear infinite;
+  will-change: transform;
+}
+.v4-marquee-track-rev {
+  animation-direction: reverse;
+  animation-duration: 40s;
+}
+/* Pausing on hover lets someone actually read a ribbon they care about. */
+.v4-marquee:hover .v4-marquee-track {
+  animation-play-state: paused;
+}
+
+/* --------------------------------------------------------------------------
+   Header. Transparent over the hero, then condenses into an opaque pill once
+   the user scrolls. `backdrop-filter` is declared at the call site as a
+   Tailwind utility — a raw declaration here gets stripped by the Tailwind v4 /
+   Lightning CSS pass (verified in v3; see the note in v3.css).
+   -------------------------------------------------------------------------- */
+.v4-header {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    padding 0.35s ease;
+}
+
+/* The animated underline that tracks the active nav item. Width/position are
+   driven by transform only, so the indicator glides without reflow. */
+.v4-navlink {
+  position: relative;
+  transition: color 0.2s ease;
+}
+.v4-navlink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.v4-navlink:hover::after,
+.v4-navlink[data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+/* --------------------------------------------------------------------------
+   Progress meter for a cause's funding. `--v4-pct` is set inline per card.
+   The fill is a real element so it can animate width from 0 on reveal.
+   -------------------------------------------------------------------------- */
+.v4-meter {
+  position: relative;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--v4-mint-quiet);
+  overflow: hidden;
+}
+.v4-meter > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: block;
+  width: var(--v4-pct, 0%);
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--v4-teal), var(--v4-teal-bright));
+  transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --------------------------------------------------------------------------
+   Card lift. Photo scales inside its own clipped frame so the card edge stays
+   crisp; only transform animates.
+   -------------------------------------------------------------------------- */
+.v4-card {
+  background: var(--v4-raised);
+  border: 1px solid var(--v4-hairline);
+  border-radius: var(--v4-radius);
+  box-shadow: var(--v4-shadow);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.v4-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--v4-shadow-lift);
+}
+.v4-card-photo {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.v4-card:hover .v4-card-photo {
+  transform: scale(1.05);
+}
+
+/* --------------------------------------------------------------------------
+   Photo marquee (the "Together, we change what a shelf is for" collage).
+
+   Two columns of photographs scrolling vertically, forever. The track holds the
+   image set twice, so translating it by exactly -50% lands on a pixel-identical
+   frame and the loop is seamless.
+
+   Direction follows the reader: `data-dir="up"|"down"` on the section flips
+   `animation-direction`, driven by Lenis's scroll direction. The two columns run
+   opposite each other (`-alt` reverses), which reads as depth rather than a
+   conveyor belt. Idle scroll holds the last direction — stopping mid-glide
+   would look like a bug, not a pause.
+   -------------------------------------------------------------------------- */
+@keyframes v4-scroll-y {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+.v4-photo-track {
+  display: flex;
+  flex-direction: column;
+  animation: v4-scroll-y var(--v4-photo-speed) linear infinite;
+  will-change: transform;
+  --v4-photo-speed: 42s;
+}
+
+/* Spacing lives on the item, NOT as `gap` on the track.
+   `gap` is only inserted *between* children, so a track of 2N items is
+   `2N*h + (2N-1)*g` tall — and translating it -50% lands half a gap off the
+   matching frame, making the loop visibly jump every cycle. Giving every item a
+   uniform bottom margin makes each one exactly `h + g`, so half the track is
+   exactly N items and -50% is pixel-identical. */
+.v4-photo-track > * {
+  margin-bottom: 1rem;
+}
+
+/* The second column runs against the first. */
+.v4-photo-track-alt {
+  animation-direction: reverse;
+  --v4-photo-speed: 52s;
+}
+
+/* Reader scrolls up -> the tracks reverse. Each column flips relative to its own
+   resting direction, so the two stay in opposition at all times. */
+.v4-photo-marquee[data-dir="up"] .v4-photo-track {
+  animation-direction: reverse;
+}
+.v4-photo-marquee[data-dir="up"] .v4-photo-track-alt {
+  animation-direction: normal;
+}
+
+/* Fade the top and bottom edges so photos enter and leave the column instead of
+   being sliced off by the container. */
+.v4-photo-marquee {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 9%, #000 91%, transparent);
+}
+
+/* Hold on hover so a photo can actually be looked at. */
+.v4-photo-marquee:hover .v4-photo-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v4-photo-track {
+    animation: none;
+  }
+  /* Without the loop the duplicated half is dead weight — and a static column of
+     14 photos is absurd. Hide the clone and let the column simply be a column. */
+  .v4-photo-track > [data-clone="true"] {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Testimonials.
+
+   Two states, both visible in the reference: the cards arrive as a loose,
+   overlapping pile (rotated a few degrees each) and settle into a clean 3x2
+   grid. The scatter is authored per-card in _data.ts and applied as a CSS var
+   here, so JS only ever toggles one class.
+
+   The reference's pastels (lilac / periwinkle / peach / white) are remapped
+   onto the teal-gold family so the section stays inside the palette.
+   -------------------------------------------------------------------------- */
+.v4-quote-mint {
+  background: var(--v4-mint);
+  --v4-quote-ink: var(--v4-ink);
+}
+.v4-quote-sky {
+  background: var(--v4-mint-quiet);
+  --v4-quote-ink: var(--v4-ink);
+}
+.v4-quote-peach {
+  background: color-mix(in srgb, var(--v4-gold) 32%, var(--v4-paper));
+  --v4-quote-ink: var(--v4-ink);
+}
+.v4-quote-paper {
+  background: var(--v4-raised);
+  --v4-quote-ink: var(--v4-ink);
+}
+
+/* The SETTLED grid is the default state, not the scattered pile.
+
+   This matters: the pile only resolves once React has hydrated and the
+   IntersectionObserver has fired. If the pile were the default, a visitor
+   without JS — or anyone looking at the server-rendered HTML before hydration —
+   would be left staring at a permanently jumbled stack. So the card's resting
+   style is the clean grid, and JS opts *into* the scatter by setting
+   `data-scatter` on the container before the settle. Progressive enhancement
+   pointed the right way. */
+.v4-quote {
+  border: 1px solid var(--v4-hairline);
+  border-radius: var(--v4-radius-lg);
+  color: var(--v4-quote-ink);
+  transform: translate(0, 0) rotate(0deg);
+  box-shadow: var(--v4-shadow);
+  transition:
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+}
+
+/* The effect adds `data-scatter` one frame after paint, on top of a settled,
+   server-rendered grid. With transitions live, that first application would
+   *animate* — the cards would visibly slide apart on load. `data-armed` is a
+   one-shot latch set on the following frame and never removed: it suppresses
+   only that initial throw. Every scatter after it (scrolling back past the
+   section) is armed, and animates. */
+.v4-quotes[data-scatter="true"]:not([data-armed="true"]) .v4-quote {
+  transition: none;
+}
+
+/* Stacking order is permanent, not scoped to the scattered state.
+
+   The cards overlap while piled AND for the whole flight in and out of the grid.
+   If `z-index` only applied under `[data-scatter]`, it would snap away the
+   instant the attribute is removed — while the cards are still mid-transition
+   and still overlapping — and they'd visibly clip through one another on the
+   way home. Hover raises above all of it. */
+.v4-quote {
+  z-index: var(--v4-z, 0);
+}
+
+/* Scattered. `--v4-sr/-sx/-sy` come from the data, inline per card. The authored
+   offsets are card-relative and small; `--v4-spread` scales them into a genuine
+   overlapping pile without making the data unreadable. */
+.v4-quotes[data-scatter="true"] .v4-quote {
+  --v4-spread: 2.4;
+  transform: translate(calc(var(--v4-sx, 0px) * var(--v4-spread)), calc(var(--v4-sy, 0px) * var(--v4-spread)))
+    rotate(var(--v4-sr, 0deg));
+  box-shadow: var(--v4-shadow-lift);
+}
+
+/* Single column: the cards stack vertically, so a horizontal scatter would
+   simply hang off the page. Keep the rotation, drop the translation. */
+@media (max-width: 767px) {
+  .v4-quotes[data-scatter="true"] .v4-quote {
+    --v4-spread: 0;
+  }
+}
+
+/* Hover lifts one card out of the plane — the only motion once settled. The
+   z-index must clear every card's `--v4-z` (0..5), not just the default 0. */
+.v4-quotes:not([data-scatter="true"]) .v4-quote:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--v4-shadow-lift);
+  z-index: 10;
+}
+
+/* The middle column sits offset in the settled grid (card 2 high, card 5 low),
+   which is what stops the 3x2 reading as a spreadsheet. */
+@media (min-width: 768px) {
+  .v4-quotes {
+    align-items: start;
+  }
+  .v4-quote-raise {
+    margin-top: -2.5rem;
+  }
+  .v4-quote-drop {
+    margin-top: 2.5rem;
+  }
+}
+
+/* Monogram avatar. The reference uses photographs; we have none for these six,
+   and a broken <img> is worse than no <img>. Initials on a teal disc carry the
+   same "a real person said this" signal with zero asset cost. */
+.v4-monogram {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--v4-teal);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.dark .v4-monogram {
+  color: var(--v4-forest-deep);
+}
+
+/* Reduced motion: never scatter. The component also refuses to set
+   `data-scatter`, so this is belt-and-braces for a preference that flips at
+   runtime, after the cards have already been placed. */
+@media (prefers-reduced-motion: reduce) {
+  .v4-quotes[data-scatter="true"] .v4-quote {
+    --v4-spread: 0;
+    transform: none;
+  }
+}
+
+/* Underline that draws in on hover — "read more" style links. */
+.v4-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.v4-underline:hover,
+.v4-underline:focus-visible {
+  background-size: 100% 1.5px;
+}
+
+/* --------------------------------------------------------------------------
+   Hero scrim. Darkens the photograph under the headline without a flat
+   overlay — steepest exactly where the type sits, so white copy clears 7:1
+   whatever the photo happens to be doing underneath.
+   -------------------------------------------------------------------------- */
+.v4-scrim {
+  background:
+    linear-gradient(to top, rgb(10 43 37 / 0.5) 0%, rgb(10 43 37 / 0) 42%),
+    linear-gradient(
+      100deg,
+      rgb(10 43 37 / 0.88) 0%,
+      rgb(10 43 37 / 0.78) 32%,
+      rgb(10 43 37 / 0.52) 56%,
+      rgb(10 43 37 / 0.16) 82%,
+      rgb(10 43 37 / 0.28) 100%
+    );
+}
+
+/* Grain: the inspiration's dark bands aren't flat, they have a paper tooth.
+   Pure CSS, no image request. Decorative -> aria-hidden at the markup level. */
+.v4-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.14) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+/* --------------------------------------------------------------------------
+   FAQ accordion. Uses <details>/<summary> so it works with zero JS, keyboard
+   included. Height is animated by `interpolate-size` where supported — a
+   progressive enhancement that degrades to an instant open.
+   -------------------------------------------------------------------------- */
+@supports (interpolate-size: allow-keywords) {
+  .v4 {
+    interpolate-size: allow-keywords;
+  }
+  .v4-faq-body {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .v4-faq[open] .v4-faq-body {
+    height: auto;
+  }
+}
+.v4-faq summary::-webkit-details-marker {
+  display: none;
+}
+.v4-faq summary {
+  list-style: none;
+}
+.v4-faq .v4-faq-chevron {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.v4-faq[open] .v4-faq-chevron {
+  transform: rotate(180deg);
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion. Kill the loops outright; collapse (don't merely shorten)
+   every transition so nothing eases.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .v4 .v4-marquee-track {
+    animation: none;
+  }
+  .v4 *,
+  .v4 *::before,
+  .v4 *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .v4 .v4-btn:hover,
+  .v4 .v4-card:hover,
+  .v4 .v4-badge:hover {
+    transform: none;
+  }
+}

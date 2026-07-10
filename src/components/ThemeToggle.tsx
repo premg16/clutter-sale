@@ -48,8 +48,13 @@ function circleReveal(next: Theme, origin: { x: number; y: number }) {
  * so the button starts in sync with no hydration flash, then lets the user flip
  * it. Choice persists to localStorage; if the user never chooses, we keep
  * following the OS while the tab is open.
+ *
+ * `className` replaces the default skin entirely. The default is the `/` brand's
+ * neo-brutalist chip (navy border, cream fill, hard offset shadow); routes with
+ * their own palette — /v3 — pass their own so the button matches its band.
+ * Behaviour and a11y are identical either way.
  */
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string } = {}) {
   const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -96,7 +101,10 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={mounted ? `Switch to ${isDark ? "light" : "dark"} mode` : "Toggle theme"}
       aria-pressed={mounted ? isDark : undefined}
-      className="relative grid size-11 place-items-center rounded-2xl border-2 border-brand-navy bg-brand-cream text-brand-navy shadow-[3px_3px_0_0_var(--color-hairline)] transition-transform hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-terracotta"
+      className={
+        className ??
+        "relative grid size-11 place-items-center rounded-2xl border-2 border-brand-navy bg-brand-cream text-brand-navy shadow-[3px_3px_0_0_var(--color-hairline)] transition-transform hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-terracotta"
+      }
     >
       {/* Render both, cross-fade — avoids a layout jump and needs no icon lib swap. */}
       <motion.span

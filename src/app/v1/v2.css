@@ -1,0 +1,515 @@
+/* ==========================================================================
+   /v2 — self-contained theme + motion primitives.
+
+   Imported only by src/app/v2/layout.tsx, so nothing here touches the `/`
+   page. Tokens are scoped under [data-v2] rather than :root so they cannot
+   leak into the root layout's brand palette.
+
+   Teal plays the "saturated accent block" role: a bright field that carries
+   DARK ink on top (measured 10.3:1 light, 10.1:1 dark — both AAA).
+   ========================================================================== */
+
+[data-v2] {
+  /* ---- Accent: the one saturated colour ---------------------------------- */
+  --v2-accent: #7fe6d9;
+  --v2-accent-on: #0b2a2e; /* ink drawn ON the accent block */
+  --v2-accent-deep: #0f4a52; /* dark teal BACKGROUNDS (cream ink on top) */
+  --v2-accent-ink: #0f4a52; /* accent-coloured TEXT on a normal surface */
+  /* A teal that actually READS as teal. --v2-accent-ink is hsl(187 69% 19%) —
+     right hue, but so dark it looks near-black. This is the same hue at a mid
+     lightness: visibly teal AND 4.78:1 on the cream surface. */
+  --v2-teal: #1d7c72;
+  --v2-accent-quiet: #e6f7f4; /* faintest tint for card fills */
+
+  /* ---- Surfaces + ink ---------------------------------------------------- */
+  --v2-surface: #fbf9f5;
+  --v2-raised: #ffffff;
+  --v2-ink: #12262b;
+  --v2-ink-soft: #55686c;
+  --v2-hairline: #12262b;
+
+  /* ---- Motion ------------------------------------------------------------ */
+  --v2-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  background-color: var(--v2-surface);
+  color: var(--v2-ink);
+}
+
+/* Dark: accent stays bright — it is the page's single light source. The ink
+   drawn on it goes darker still to hold the same contrast ratio. Accent TEXT
+   must flip to the bright teal (deep-on-raised is only 1.47:1 — unreadable). */
+.dark [data-v2] {
+  --v2-accent: #2ee0c4;
+  --v2-accent-on: #04211d;
+  --v2-accent-deep: #0c3b41;
+  --v2-accent-ink: #5ce3cc;
+  --v2-accent-quiet: #0f2b2f;
+  /* On a dark surface the teal must go bright: 10.8:1 on --v2-surface. */
+  --v2-teal: #2ee0c4;
+
+  --v2-surface: #08191e;
+  --v2-raised: #102a31;
+  --v2-ink: #eaf1f0;
+  --v2-ink-soft: #a5bcc0;
+  --v2-hairline: #2c4a52;
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+/* The root globals.css does `h1..h6 { @apply font-display tracking-tight }`.
+   Two problems inherit into /v2:
+   1. Anton is already condensed; -0.025em on top of it closes the counters.
+   2. Every h3/h4 used as a UI *label* (FAQ questions, card titles) rendered in
+      Anton at 16px with faux-bold — dense and genuinely hard to read.
+   So: display face stays for real headings, opened up optically. Small
+   headings fall back to the body font, which is what they always were. */
+[data-v2] h1 {
+  letter-spacing: 0.002em; /* big type already has room */
+}
+[data-v2] h2 {
+  letter-spacing: 0.012em;
+}
+
+/* Sub-headings are UI labels, not display type. Sans, normal tracking. */
+[data-v2] h3,
+[data-v2] h4,
+[data-v2] h5,
+[data-v2] h6 {
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+}
+
+/* Opt back into the display face where it IS wanted at heading level. */
+[data-v2] .v2-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.012em;
+}
+
+/* Anton at small sizes (step numbers, "01") needs the most tracking of all. */
+[data-v2] .font-display {
+  letter-spacing: 0.03em;
+}
+
+/* ==========================================================================
+   Motion primitives
+   ========================================================================== */
+
+/* Elements GSAP animates start at opacity-0 (set in JSX). GSAP adds .v2-ready
+   to the root once it has taken control. If GSAP never loads — no JS, a chunk
+   error, a slow network — this failsafe reveals the content anyway after 1.2s,
+   so the page is never permanently blank. */
+[data-v2] [data-reveal],
+[data-v2] [data-reveal-group] > *,
+[data-v2] [data-hero-fade],
+[data-v2] [data-collage-card],
+[data-v2] [data-split-heading],
+[data-v2] [data-split-headline] {
+  will-change: transform, opacity;
+}
+
+[data-v2]:not(.v2-ready) [data-reveal],
+[data-v2]:not(.v2-ready) [data-reveal-group] > *,
+[data-v2]:not(.v2-ready) [data-hero-fade],
+[data-v2]:not(.v2-ready) [data-collage-card],
+[data-v2]:not(.v2-ready) [data-split-heading],
+[data-v2]:not(.v2-ready) [data-split-headline] {
+  animation: v2-failsafe 0.01s 1.2s forwards;
+}
+@keyframes v2-failsafe {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* SplitText line/char wrappers need overflow clipping for the "rise" reveal. */
+[data-v2] .v2-line-mask {
+  overflow: hidden;
+  display: block;
+}
+
+/* ---- Magnetic button --------------------------------------------------- */
+[data-v2] .v2-magnetic {
+  will-change: transform;
+}
+[data-v2] .v2-magnetic > * {
+  pointer-events: none;
+}
+
+/* ---- Hover system -------------------------------------------------------
+   No translateY. Nudging an element up on hover is a tic, not feedback: it
+   shifts the thing you are aiming at, away from the cursor.
+
+   .v2-card-hover — surfaces respond in place: the border gains contrast and a
+   soft shadow blooms, so the card reads as *raised* without moving.
+   .v2-press     — interactive controls scale a hair and settle on press, which
+   is the only motion that actually maps to "I clicked this". */
+
+[data-v2] .v2-lift {
+  transition:
+    box-shadow 0.35s var(--v2-ease),
+    border-color 0.35s var(--v2-ease),
+    background-color 0.35s var(--v2-ease);
+}
+@media (hover: hover) {
+  [data-v2] .v2-lift:hover {
+    border-color: color-mix(in srgb, var(--v2-hairline) 34%, transparent);
+    box-shadow: 0 6px 26px -12px color-mix(in srgb, var(--v2-hairline) 55%, transparent);
+  }
+}
+
+/* Controls: scale in, settle on press. Compositor-only, 150ms in / 90ms out. */
+[data-v2] .v2-press {
+  transition:
+    transform 0.15s var(--v2-ease),
+    filter 0.2s var(--v2-ease);
+}
+@media (hover: hover) {
+  [data-v2] .v2-press:hover {
+    transform: scale(1.03);
+    filter: saturate(1.08);
+  }
+}
+[data-v2] .v2-press:active {
+  transform: scale(0.97);
+  transition-duration: 0.09s;
+}
+
+/* ---- Audience role panel ------------------------------------------------
+   Below `lg` the image and body merge into ONE card: the banner sits directly
+   on its content. At `lg` they split back into two columns, so the card chrome
+   moves off the wrapper and onto the body column only. */
+[data-v2] .v2-role-panel {
+  background: var(--v2-raised);
+  border: 1px solid color-mix(in srgb, var(--v2-hairline) 12%, transparent);
+}
+@media (min-width: 1024px) {
+  [data-v2] .v2-role-panel {
+    background: transparent;
+    border: 0;
+  }
+  [data-v2] .v2-role-body {
+    background: var(--v2-raised);
+    border: 1px solid color-mix(in srgb, var(--v2-hairline) 12%, transparent);
+  }
+}
+
+/* ---- Tab panel crossfade ------------------------------------------------ */
+/* The panel is keyed on the active role, so React remounts it and this replays. */
+@keyframes v2-panel {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- Hero word cycle ----------------------------------------------------
+   A plain slide reads as a stock ticker. This resolves the word instead: it
+   arrives out of focus, slightly large and skewed, then snaps into register —
+   the way a lens finds focus. The blur does the heavy lifting; the transform
+   is small on purpose. */
+@keyframes v2-word-in {
+  0% {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(22%) scale(1.14) skewX(-5deg);
+  }
+  55% {
+    opacity: 1;
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+/* The teal block behind it breathes with the word, a beat behind. */
+@keyframes v2-block-in {
+  0% {
+    transform: rotate(-1deg) scaleX(0.86);
+    opacity: 0.65;
+  }
+  60% {
+    transform: rotate(-1deg) scaleX(1.02);
+  }
+  100% {
+    transform: rotate(-1deg) scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* The cycling word and its block are plain CSS animations, so they paint on the
+   first frame — while the headline prefix is still opacity:0, waiting for GSAP
+   to load, register SplitText and run. That left the payoff word hanging alone
+   on screen for ~115ms before the sentence it completes.
+
+   So they stay hidden until GSAP signals readiness by adding .v2-ready to the
+   page root. Only the FIRST word carries an extra delay (via .v2-word-first),
+   timed to land with the headline's last characters; later swaps must fire
+   immediately or every 2.6s cycle would visibly stall. */
+[data-v2] .v2-word,
+[data-v2] .v2-word-block {
+  opacity: 0;
+}
+
+.v2-ready .v2-word {
+  animation: v2-word-in 0.72s var(--v2-ease) both;
+  will-change: transform, filter, opacity;
+}
+.v2-ready .v2-word-block {
+  transform: rotate(-1deg);
+  transform-origin: left center;
+  animation: v2-block-in 0.6s var(--v2-ease) both;
+  will-change: transform;
+}
+
+/* First paint only — arrive with the headline, not ahead of it. */
+.v2-ready .v2-word-first.v2-word {
+  animation-delay: 0.42s;
+}
+.v2-ready .v2-word-first.v2-word-block {
+  animation-delay: 0.38s;
+}
+
+/* Failsafe: if GSAP never loads, .v2-ready never lands and the word would stay
+   invisible forever. Reveal it, matching the [data-reveal] failsafe timing. */
+[data-v2]:not(.v2-ready) .v2-word,
+[data-v2]:not(.v2-ready) .v2-word-block {
+  animation: v2-failsafe 0.01s 1.2s forwards;
+}
+
+/* ---- "How it works": pinned, scroll-scrubbed three-column ---------------
+   The copy panels all occupy one grid cell so the pinned column never changes
+   height as the text swaps — a height change during a pin makes ScrollTrigger
+   recalculate and the section visibly jitters. */
+[data-v2] .v2-how-copy {
+  display: grid;
+  align-content: center;
+}
+[data-v2] .v2-how-panel {
+  grid-area: 1 / 1;
+  align-self: center;
+  transition: opacity 0.45s var(--v2-ease);
+  pointer-events: none;
+}
+/* The image window has a fixed aspect and must not be stretched by the row. */
+[data-v2] .v2-how-window {
+  align-self: center;
+}
+[data-v2] .v2-how-panel[data-on] {
+  pointer-events: auto;
+}
+
+/* The image window's stacked layers are clipped by GSAP; give the compositor
+   a hint since the clip animates on every scroll frame. */
+[data-v2] .v2-how-window > div {
+  will-change: clip-path;
+}
+
+/* ---- Rail label tinting -------------------------------------------------
+   `--near` (0…1) is written to each .v2-how-step on every scroll frame: 1 when
+   the fill's leading edge is exactly on that step, falling to 0 one step away.
+   The colour is mixed live, so a label warms toward teal as the line
+   approaches rather than snapping when it arrives.
+
+   Mixed in oklab: a straight sRGB mix between desaturated grey and saturated
+   teal passes through a muddy middle.
+
+   The initial value is set inline in the JSX (step 0 starts at 1, the rest at
+   0), so the rail reads correctly before GSAP loads and under reduced motion. */
+[data-v2] .v2-how-num,
+[data-v2] .v2-how-label {
+  color: color-mix(in oklab, var(--v2-teal) calc(var(--near, 0) * 100%), var(--v2-ink-soft));
+}
+
+/* Static layout — below `lg`, under reduced motion, or if GSAP never loads.
+   The pinned scrub is a desktop affordance: stacked, the section is ~1525px
+   tall, so pinning it on a phone traps content off-screen. Instead it becomes
+   an ordinary list — every step visible, no pin, no clipping.
+
+   The image window is dropped rather than shown: without GSAP nothing sets the
+   clip paths, so all four photos would stack into an unreadable pile. Each
+   step's own photo would need its own <img>, which the desktop markup does not
+   have. The rail + copy carry the content on their own. */
+@media (max-width: 1023.98px), (prefers-reduced-motion: reduce) {
+  [data-v2] .v2-how-grid {
+    display: block;
+  }
+  [data-v2] .v2-how-window {
+    display: none;
+  }
+  [data-v2] .v2-how-copy {
+    display: block;
+  }
+  [data-v2] .v2-how-panel {
+    opacity: 1 !important;
+    transition: none;
+  }
+  /* Self-contained step cards sit closer than loose text blocks would. */
+  [data-v2] .v2-how-panel + .v2-how-panel {
+    margin-top: 1rem;
+  }
+  /* The rail is the desktop progress indicator. Without a travelling line it is
+     a redundant second copy of the step titles, which each panel already ends
+     with — so drop it and let the panels speak. */
+  [data-v2] .v2-how-rail {
+    display: none;
+  }
+}
+
+/* ---- Carousel ----------------------------------------------------------- */
+/* Native scroll-snap track. The scrollbar is hidden because the segmented
+   indicator already communicates position — but the track stays a real
+   scroller, so trackpad, touch and keyboard all keep working. */
+[data-v2] .v2-track {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  /* Cards scale up when active; without this the lift is clipped. */
+  padding-block: 0.5rem;
+}
+[data-v2] .v2-track::-webkit-scrollbar {
+  display: none;
+}
+
+[data-v2] .v2-card {
+  transition:
+    opacity 0.6s var(--v2-ease),
+    transform 0.6s var(--v2-ease);
+  will-change: transform, opacity;
+}
+
+/* The active indicator segment fills across the autoplay window. */
+@keyframes v2-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* ---- Marquee ------------------------------------------------------------ */
+@keyframes v2-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+[data-v2] .v2-marquee {
+  animation: v2-marquee 38s linear infinite;
+}
+[data-v2] .v2-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ---- Hero grain / ambient wash ------------------------------------------ */
+[data-v2] .v2-bloom {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.28;
+  pointer-events: none;
+  will-change: transform;
+}
+.dark [data-v2] .v2-bloom {
+  opacity: 0.22;
+}
+
+/* ---- Touch targets ------------------------------------------------------
+   Footer links are standalone navigation targets, not links inside a sentence,
+   so WCAG 2.5.8's inline-link exemption does not apply. Give them a 44px hit
+   area on touch pointers without fattening the desktop nav, which shares the
+   same NavLink component. */
+@media (pointer: coarse) {
+  [data-v2] footer nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  /* The wordmark link in the footer, likewise. */
+  [data-v2] footer a[href="#top"] {
+    min-height: 44px;
+  }
+}
+
+/* ---- Focus ring (consistent across the page) ---------------------------- */
+[data-v2] :focus-visible {
+  outline: 2px solid var(--v2-accent-deep);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.dark [data-v2] :focus-visible {
+  outline-color: var(--v2-accent);
+}
+
+/* ==========================================================================
+   Reduced motion — kill everything decorative, reveal all content.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  [data-v2] [data-reveal],
+  [data-v2] [data-reveal-group] > *,
+  [data-v2] [data-hero-fade],
+  [data-v2] [data-collage-card],
+  [data-v2] [data-split-heading],
+  [data-v2] [data-split-headline] {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  [data-v2] .v2-marquee,
+  [data-v2] .v2-bloom,
+  [data-v2] [role="tabpanel"] {
+    animation: none !important;
+  }
+  [data-v2] .v2-lift,
+  [data-v2] .v2-press {
+    transition: none;
+  }
+  [data-v2] .v2-press:hover,
+  [data-v2] .v2-press:active {
+    transform: none;
+    filter: none;
+  }
+  /* Carousel: no smooth scroll, no card scale/fade, no progress fill. Cards
+     stay fully legible; the user drives the track by hand. */
+  [data-v2] .v2-track {
+    scroll-behavior: auto;
+  }
+  /* Sliding tab pill snaps instead of travelling. */
+  [data-v2] [role="tablist"] > span[aria-hidden="true"] {
+    transition: none !important;
+  }
+  [data-v2] .v2-card {
+    transition: none;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  [data-v2] [aria-current="true"] > span {
+    animation: none !important;
+    width: 100% !important;
+  }
+  /* Word cycle: hold the first word — no blur, no scale, no travel. */
+  [data-v2] .v2-word,
+  [data-v2] .v2-word-block {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+  [data-v2] .v2-word {
+    transform: none !important;
+  }
+  [data-v2] .v2-word-block {
+    transform: rotate(-1deg) !important;
+  }
+}
