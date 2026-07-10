@@ -388,14 +388,32 @@ function Header() {
           <LogoMark className="size-9" />
           <span
             className="text-[0.95rem] font-semibold tracking-tight"
-            style={{ color: scrolled ? "var(--v4-ink)" : "var(--v4-cream)" }}
+            // Un-scrolled, the wordmark sits over the marigold hero panel, never
+            // over the photo — the logo is at the left edge of a centred
+            // max-w-6xl container and the panel runs to 36% of the viewport.
+            // Cream on marigold is ~1.3:1; the panel's own ink is what reads.
+            style={{ color: scrolled ? "var(--v4-ink)" : "var(--v4-on-gold)" }}
           >
             Clutter Sale
           </span>
         </a>
 
-        <nav aria-label="Primary" className="hidden lg:block">
-          <ul className="flex items-center gap-8 text-sm">
+        {/* Pushed right, off the marigold panel.
+
+            The hero beneath is split — marigold from 0 to 36vw, photo after —
+            so a link that straddles the seam has half its letters on yellow and
+            half on a dark photo. No text colour survives both: the mint active
+            colour measures 1.01:1 on the marigold, and the dark ink that would
+            fix that measures 1.45:1 on the photo. The nav has to leave the
+            yellow rather than be recoloured.
+
+            `ml-auto` (not a fixed or `vw` margin) collapses the free space to
+            the nav's left, so it sits flush against the actions and can never
+            drift back over the seam at another window width. `shrink-0` and
+            `whitespace-nowrap` keep it on one line — without them the push
+            squeezes the links and they wrap onto two rows. */}
+        <nav aria-label="Primary" className="ml-auto mr-8 hidden shrink-0 lg:block">
+          <ul className="flex items-center gap-8 whitespace-nowrap text-sm">
             {nav.map((item) => {
               const isActive = active === item.href;
               return (
@@ -413,7 +431,10 @@ function Header() {
                           : "var(--v4-ink-soft)"
                         : isActive
                           ? "var(--v4-on-dark)"
-                          : "color-mix(in srgb, var(--v4-cream) 72%, transparent)",
+                          : // Full-strength cream, not 72%. The nav sits over the
+                            // weak end of the hero scrim (0.16 alpha), where a
+                            // faded cream washes out against the photograph.
+                            "var(--v4-cream)",
                     }}
                   >
                     {item.label}
@@ -424,8 +445,24 @@ function Header() {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
+        <div className="flex shrink-0 items-center gap-2">
+          {/* ThemeToggle's `className` replaces its default skin entirely.
+              Unstyled, it inherits the `/` brand's neo-brutalist chip — navy
+              border, cream fill, hard offset shadow — which reads as pasted-on
+              against this route's soft pills. Match `.v4-btn`: round, hairline,
+              transparent, with the same lift. At rest it sits over the hero
+              photo (right of the marigold seam), so it goes light-on-dark, then
+              flips to ink-on-paper when the header condenses. */}
+          <ThemeToggle
+            className={[
+              "relative grid size-10 shrink-0 place-items-center rounded-full border",
+              "transition-[transform,background-color,border-color] duration-300",
+              "hover:-translate-y-0.5 active:translate-y-0",
+              scrolled
+                ? "border-[var(--v4-hairline)] text-[var(--v4-ink)] hover:bg-[var(--v4-mint-quiet)]"
+                : "border-white/40 text-white hover:bg-white/15",
+            ].join(" ")}
+          />
           <Button href="#how" variant="solid" className="hidden sm:inline-flex">
             Sell for Good
           </Button>
@@ -568,8 +605,20 @@ function Hero() {
             </Reveal>
 
             <h1 className="mt-5 max-w-[15ch] text-[clamp(2.6rem,5.6vw,4.9rem)] leading-[1.02]" style={{ color: "#fff" }}>
+              {/* `overflow-hidden` is the mask the line-rise animation needs, but
+                  `leading-[1.02]` makes the clip box shorter than Fraunces'
+                  descender, so it sliced the tails off `g`, `p`, `y`.
+
+                  Measured: the descender falls 0.103em below the box, so 0.12em
+                  of bottom padding clears it. The matching negative margin pulls
+                  the following line back up, leaving line spacing untouched — but
+                  only between lines. On the LAST line `-mb` would drag the
+                  sub-paragraph up with it, so `[&:not(:last-child)]` scopes it. */}
               {hero.headline.map((l, i) => (
-                <span key={l} className="block overflow-hidden">
+                <span
+                  key={l}
+                  className="block overflow-hidden pb-[0.12em] [&:not(:last-child)]:-mb-[0.12em]"
+                >
                   <HeroLine index={i}>{l}</HeroLine>
                 </span>
               ))}
