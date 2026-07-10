@@ -69,7 +69,13 @@ function Badge({
       <span className="grid size-7 shrink-0 place-items-center">{glyph}</span>
       <span className="flex min-w-0 flex-col leading-none">
         <span className="text-[10px] opacity-75">{caption}</span>
-        <span className="mt-1 truncate text-[15px] font-semibold tracking-tight">{name}</span>
+        {/* No `truncate`: it sets overflow:hidden, and with the wrapper's
+            leading-none the 15px line box is shorter than the 19px glyph box —
+            so the descender of the "g" in "Google" was sliced off. The names are
+            fixed strings, so there is nothing to truncate anyway. */}
+        <span className="mt-0.5 text-[15px] font-semibold leading-snug tracking-tight">
+          {name}
+        </span>
       </span>
     </a>
   );

@@ -307,9 +307,15 @@ function CyclingWord() {
   );
 }
 
+// `overflow-x: clip` rather than `overflow: hidden`. The hidden version sliced
+// the blooms flat along the section's top edge, and since the sticky header
+// occupies the first 82px, the wash visibly began *below* the nav. Clipping only
+// the x-axis still contains the collage's entry animation (which translates
+// ±120px horizontally) while letting the wash bleed up behind the header and
+// reach the true top of the page.
 function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden px-4 pt-16 sm:pt-24">
+    <section id="top" className="relative overflow-x-clip px-4 pt-16 sm:pt-24">
       {/* Ambient blooms — soft, drifting, behind everything. */}
       <div
         data-bloom
