@@ -1,0 +1,62 @@
+/* Route-scoped typography for /v4 only.
+
+   globals.css applies `font-display` (Anton) to every h1–h6 site-wide. This
+   route uses staging's real pairing instead — Calistoga headings, Inter body —
+   so we override inside `.v4-type` and nowhere else. `/`, `/v1`, `/v2` and
+   `/v3` keep Anton + Outfit untouched. */
+
+.v4-type {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+.v4-type h1,
+.v4-type h2,
+.v4-type h3,
+.v4-type h4,
+.v4-type h5,
+.v4-type h6 {
+  font-family: var(--font-calistoga), Georgia, serif;
+  /* Calistoga has one weight (400) — asking for 700 triggers a synthetic bold
+     that smears the letterforms. Let the face carry the weight itself. */
+  font-weight: 400;
+}
+
+/* Selection colour, scoped to /v4.
+
+   The root layout sets `selection:bg-brand-pink` on <body>, which lands a loud
+   pink block on this route's dark phone screens. Terracotta at low alpha tints
+   the selection instead of covering it, so text stays readable on both the
+   cream page and the navy panels. `/`, `/v1`, `/v2`, `/v3` keep the pink. */
+.v4-type ::selection {
+  background-color: color-mix(in srgb, var(--color-brand-terracotta) 28%, transparent);
+  color: inherit;
+}
+
+/* ---- Illustration palette ------------------------------------------------
+
+   The four cause illustrations reference these vars instead of baked hex, so a
+   single SVG serves both themes (see scripts/theme-illustrations.mjs). They are
+   inlined as React components — an <img src="*.svg"> renders in an isolated
+   document and could never see these.
+
+   Light: warm neutrals that sit on the cream page.
+   Dark:  the SAME ramp inverted. Reusing the light values would light up as
+          bright patches on the dark surface — the exact problem the original
+          white card had. */
+.v4-type {
+  --illo-paper: #f2ebe1; /* lightest — paper, screens, card faces */
+  --illo-light: #ebe3d8;
+  --illo-mid: #ddd3c6;
+  --illo-dark: #c9beb0;
+  --illo-ink: #12262b; /* line work */
+}
+
+:where(.dark) .v4-type {
+  /* Inverted ramp: "paper" becomes the darkest surface, ink becomes light, so
+     the art keeps its internal contrast instead of glowing. */
+  --illo-paper: #16323a;
+  --illo-light: #1d3f48;
+  --illo-mid: #2a5560;
+  --illo-dark: #3f7683;
+  --illo-ink: #eaf1f0;
+}
