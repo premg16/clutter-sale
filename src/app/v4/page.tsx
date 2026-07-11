@@ -510,7 +510,10 @@ export default function V4Page() {
 
             <StoreBadges />
 
-            <div className="flex items-center gap-3 pt-1">
+            {/* Rating and copy now sit on ONE line beside the avatars. Stacking the
+                stars above a two-line wrap made the block read as three ragged rows.
+                Stacks vertically only on the narrowest screens. */}
+            <div className="flex flex-col items-center gap-3 pt-1 sm:flex-row sm:items-center">
               <div className="flex -space-x-2.5">
                 {heroAvatars.map((a) => (
                   <span
@@ -521,12 +524,15 @@ export default function V4Page() {
                   </span>
                 ))}
               </div>
-              <div className="text-[13px] leading-tight text-ink-soft">
-                <div className="flex gap-0.5 text-[13px] tracking-tight text-brand-gold">★★★★★</div>
+
+              <p className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[13px] leading-tight text-ink-soft sm:justify-start">
+                <span aria-label="Rated 5 out of 5" className="tracking-tight text-brand-gold">
+                  ★★★★★
+                </span>
                 <span>
                   Join <span className="font-semibold text-ink">200+ neighbors</span> supporting local causes
                 </span>
-              </div>
+              </p>
             </div>
           </div>
 
@@ -668,16 +674,33 @@ export default function V4Page() {
             <p className="mb-4 text-[11.5px] font-bold uppercase tracking-[0.18em] text-ink-soft">
               Funding Causes Across Your Community
             </p>
-            <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-x-7 gap-y-2.5">
-              {nonprofits.map((name) => (
-                <span
-                  key={name}
-                  className="inline-flex items-center gap-1.5 text-[16px] font-semibold text-ink/55 md:text-[17px]"
-                >
-                  <CircleCheck className="size-3.5" aria-hidden />
-                  {name}
-                </span>
-              ))}
+            {/* Marquee, not a wrap: 8 names stacked into 8 rows on mobile, which was
+                a lot of dead height. One scrolling line reads as a live ticker and
+                costs a single row. Duplicated track = a seamless -50% loop; edge
+                fades so names stream in and out rather than popping. */}
+            <div className="group/np relative -mx-6 overflow-hidden md:-mx-10">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-linear-to-r from-surface-raised to-transparent md:w-28"
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-linear-to-l from-surface-raised to-transparent md:w-28"
+              />
+              <div className="flex w-max animate-marquee items-center gap-x-8 group-hover/np:[animation-play-state:paused] md:gap-x-10">
+                {[...nonprofits, ...nonprofits].map((name, i) => (
+                  <span
+                    key={`${name}-${i}`}
+                    // The duplicate half is decorative — hide it from the a11y tree
+                    // so screen readers don't hear all 8 names twice.
+                    aria-hidden={i >= nonprofits.length}
+                    className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[16px] font-semibold text-ink/55 md:text-[17px]"
+                  >
+                    <CircleCheck className="size-3.5 shrink-0" aria-hidden />
+                    {name}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -937,7 +960,9 @@ export default function V4Page() {
                   {a.initials}
                 </span>
               ))}
-              <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-surface-raised bg-brand-navy text-[11px] font-bold text-brand-cream">
+              {/* Not bg-brand-navy: in dark mode that's the surface colour, so the
+                  pill vanished and "+200" floated on nothing (contrast 1.03). */}
+              <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-surface-raised bg-brand-terracotta-deep text-[11px] font-bold text-brand-cream">
                 +200
               </span>
             </div>
@@ -1000,7 +1025,10 @@ export default function V4Page() {
             {footerStats.map((stat) => (
               <div
                 key={stat.label}
-                className="flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-3 sm:text-left"
+                // `justify-center` matters: the grid cells are equal thirds, so
+                // without it each pill clusters at the start of its cell and leaves
+                // a dead gap on the right.
+                className="flex flex-col items-center justify-center gap-2 text-center sm:flex-row sm:gap-3 sm:text-left"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-terracotta/10 sm:h-11 sm:w-11">
                   <HeartCoinIcon />

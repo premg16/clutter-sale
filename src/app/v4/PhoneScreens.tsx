@@ -322,7 +322,9 @@ export function ReviewScreen() {
 
       <div className="flex items-center gap-2 rounded-xl bg-surface-raised px-2 py-2 shadow-sm">
         <div className="relative size-8 shrink-0 rounded-md bg-surface">
-          <span className="absolute -right-1 -top-1 flex size-3 items-center justify-center rounded-full bg-brand-navy text-[7px] font-bold text-brand-cream">
+          {/* Not bg-brand-navy: it matches the dark surface, so the badge vanished
+              and "+3" floated on nothing (contrast 1.03). */}
+          <span className="absolute -right-1 -top-1 flex size-3 items-center justify-center rounded-full bg-brand-terracotta-deep text-[7px] font-bold text-brand-cream">
             +3
           </span>
         </div>

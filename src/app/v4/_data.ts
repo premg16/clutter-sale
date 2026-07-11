@@ -52,8 +52,11 @@ export const heroTabs = [
   },
 ] as const
 
+// No `bg-brand-navy` here: in dark mode it's the same value as the surface, so
+// that avatar rendered as an invisible disc with its initials floating free.
+// Every fill below holds its own against BOTH the cream and the dark ground.
 export const heroAvatars = [
-  { initials: "MS", className: "bg-brand-navy text-brand-cream" },
+  { initials: "MS", className: "bg-brand-terracotta-deep text-brand-cream" },
   { initials: "RK", className: "bg-brand-terracotta text-brand-cream" },
   { initials: "JA", className: "bg-brand-slate text-brand-cream" },
   { initials: "TL", className: "bg-brand-gold text-brand-navy" },
@@ -184,13 +187,15 @@ export const testimonials = [
   },
 ]
 
+// Same rule as heroAvatars: no `bg-brand-navy` — it matches the dark surface and
+// the disc vanishes, leaving the initials floating.
 export const communityAvatars = [
-  { initials: "MS", className: "bg-brand-navy text-brand-cream" },
+  { initials: "MS", className: "bg-brand-terracotta-deep text-brand-cream" },
   { initials: "RK", className: "bg-brand-terracotta text-brand-cream" },
   { initials: "JA", className: "bg-brand-slate text-brand-cream" },
   { initials: "TL", className: "bg-brand-gold text-brand-navy" },
   { initials: "DP", className: "bg-brand-pink text-brand-navy" },
-  { initials: "NG", className: "bg-brand-navy text-brand-cream" },
+  { initials: "NG", className: "bg-brand-terracotta-deep text-brand-cream" },
   { initials: "BF", className: "bg-brand-terracotta text-brand-cream" },
   { initials: "HC", className: "bg-brand-slate text-brand-cream" },
   { initials: "SK", className: "bg-brand-gold text-brand-navy" },
